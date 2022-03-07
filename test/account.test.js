@@ -15,6 +15,4 @@ describe("Accounts", function () {
         assert(alice.wallet);
         assert(alice.wallet.publicKey);
     });
-
-
 })
