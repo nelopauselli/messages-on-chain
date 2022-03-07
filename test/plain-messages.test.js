@@ -3,7 +3,7 @@ var assert = require('assert');
 var Adapter = require('./../adapters/jsonRpcAdapter');
 var Encoder = require('./../encoders/plainEncoder');
 
-describe("Messages", function () {
+describe("Plain (public) messages", function () {
     before(function () {
         adapter = new Adapter('http://localhost:7545');
         encoder = new Encoder();
