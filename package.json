@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/nelopauselli/messages-on-chain/issues"
   },
-  "homepage": "https://github.com/nelopauselli/messages-on-chain#readme"
+  "homepage": "https://github.com/nelopauselli/messages-on-chain#readme",
+  "dependencies": {
+    "ethers": "^5.5.4"
+  }
 }
