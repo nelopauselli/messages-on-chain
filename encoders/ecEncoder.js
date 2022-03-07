@@ -2,6 +2,8 @@
  * ref: https://ethereum.stackexchange.com/questions/78815/ethers-js-recover-public-key-from-contract-deployment-via-v-r-s-values 
  */
 const { ethers } = require("ethers");
+var eccrypto = require("eccrypto");
+
 
 class EcEncoder {
     async getPublicKey(tx) {
@@ -27,15 +29,27 @@ class EcEncoder {
         return recoveredPubKey;
     }
 
-    encode(to, content) {
-        return new Promise(function (resolve, reject) {
-            reject("not implemented");
-        });
+    async encode(publicKey, content) {
+        let raw = await eccrypto.encrypt(Buffer.from(publicKey.substring(2), 'hex'), Buffer.from(content, 'utf8'));
+        let obj = {
+            iv: raw.iv.toString('hex'),
+            ephemPublicKey: raw.ephemPublicKey.toString('hex'),
+            ciphertext: raw.ciphertext.toString('hex'),
+            mac: raw.mac.toString('hex'),
+        };
+        let json = JSON.stringify(obj);
+        return Buffer.from(json, 'utf8');
     }
-    decode(from, content) {
-        return new Promise(function (resolve, reject) {
-            reject("not implemented");
-        });
+    
+    decode(privateKey, content) {
+        let obj = JSON.parse(content);
+        let raw = {
+            iv: Buffer.from(obj.iv, 'hex'),
+            ephemPublicKey: Buffer.from(obj.ephemPublicKey, 'hex'),
+            ciphertext: Buffer.from(obj.ciphertext, 'hex'),
+            mac: Buffer.from(obj.mac, 'hex'),
+        }
+        return eccrypto.decrypt(Buffer.from(privateKey.substring(2), 'hex'), raw);
     }
 }
 
