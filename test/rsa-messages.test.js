@@ -4,6 +4,9 @@ var Adapter = require('./../adapters/jsonRpcAdapter');
 var Encoder = require('../encoders/rsaEncoder');
 
 describe("Encoding messages using RSA", function () {
+    let adapter, encoder;
+    let alice, bob;
+
     before(function () {
         adapter = new Adapter('http://localhost:7545');
         encoder = new Encoder();

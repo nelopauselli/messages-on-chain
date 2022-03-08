@@ -3,6 +3,8 @@ var assert = require('assert');
 var Adapter = require('./../adapters/jsonRpcAdapter');
 
 describe("Accounts", function () {
+    let adapter;
+    
     before(function () {
         adapter = new Adapter('http://localhost:7545');
     });

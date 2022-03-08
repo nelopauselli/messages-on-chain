@@ -5,6 +5,9 @@ var Adapter = require('./../adapters/jsonRpcAdapter');
 var Encoder = require('../encoders/ecEncoder');
 
 describe("Encoding messages using EC", function () {
+    let adapter, encoder;
+    let alice, bob;
+    
     let publicTx = {
         nonce: 1,
         gasPrice: ethers.BigNumber.from('0x04a817c800'),

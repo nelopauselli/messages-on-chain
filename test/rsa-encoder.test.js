@@ -2,6 +2,8 @@ var assert = require('assert');
 var Encoder = require('../encoders/rsaEncoder');
 
 describe("Rsa encoder", function () {
+    let encoder;
+    
     before(function () {
         encoder = new Encoder();
     });

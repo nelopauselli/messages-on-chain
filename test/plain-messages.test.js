@@ -4,6 +4,10 @@ var Adapter = require('./../adapters/jsonRpcAdapter');
 var Encoder = require('./../encoders/plainEncoder');
 
 describe("Plain (public) messages", function () {
+    let adapter, encoder;
+    let alice;
+    let messagesOnChainPublicAddress;
+
     before(function () {
         adapter = new Adapter('http://localhost:7545');
         encoder = new Encoder();

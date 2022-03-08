@@ -2,6 +2,8 @@ var assert = require('assert');
 var Encoder = require('./../encoders/plainEncoder');
 
 describe("Plain encoder", function () {
+    let encoder;
+    
     before(function () {
         encoder = new Encoder();
     });
