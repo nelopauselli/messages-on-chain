@@ -23,3 +23,8 @@ Generate private key
 Generate public key
 
     openssl rsa -pubout -in private_key.pem -out public_key.pem
+
+# References
+* [Asymmetric encryption (Public-key cryptography) with Node.js](https://whyboobo.com/devops/tutorials/asymmetric-encryption-with-nodejs/)
+* [Elliptic Curve Integrated Encryption Scheme (ECIES)](https://github.com/bitchan/eccrypto#ecies)
+* [How to recover the public key and address from a signed message?](https://github.com/ethers-io/ethers.js/issues/447)
