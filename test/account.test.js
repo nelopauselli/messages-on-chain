@@ -38,4 +38,11 @@ describe("Accounts", function () {
         assert(account.wallet.address);
         assert(account.wallet.mnemonic);
     });
+
+    it("Balance of Alice", async function () {
+        let alice = adapter.createAccount('alice');
+        let balance = await alice.getBalance();
+        assert(balance);
+        assert(balance > 0, 'Balance greater than 0');
+    });
 })

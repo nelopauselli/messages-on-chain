@@ -2,7 +2,8 @@ var Adapter = require('./adapters/jsonRpcAdapter');
 const fs = require('fs'),
     path = require('path');
 
-const adapter = new Adapter('http://localhost:7545');
+const url = 'https://rpc-mumbai.maticvigil.com/'; //'http://localhost:7545';
+const adapter = new Adapter(url);
 
 async function main() {
     console.log('connecting...');
@@ -32,6 +33,9 @@ async function main() {
         console.log('Wallet was loaded');
         console.log(`> Address: ${wallet.address}`);
     }
+
+    let balance = await account.getBalance();
+    console.log(`Your balance is ${balance}`);
 }
 
 main();

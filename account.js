@@ -21,6 +21,10 @@ class Account {
         
         return tx;
     }
+
+    async getBalance(){
+        return this.wallet.getBalance();
+    }
 }
 
 module.exports = Account;
