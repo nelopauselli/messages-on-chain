@@ -7,7 +7,12 @@ class JsonRpcAdapter {
     }
 
     createAccount(name) {
-        return new Account(name, this.provider);
+        return Account.fromFile(name, this.provider);
+    }
+
+    newAccount(name) {
+        let wallet = ethers.Wallet.createRandom();
+        return new Account(name, wallet);
     }
 
     async getBlockNumber(){

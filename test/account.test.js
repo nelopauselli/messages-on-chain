@@ -30,4 +30,12 @@ describe("Accounts", function () {
     it("Batman", function () {
         assert.rejects(() => adapter.createAccount('batman'));
     });
+
+    it("New acount", function(){
+        let account = adapter.newAccount();
+        assert(account);
+        assert(account.wallet);
+        assert(account.wallet.address);
+        assert(account.wallet.mnemonic);
+    });
 })

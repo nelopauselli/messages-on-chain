@@ -2,9 +2,14 @@ const { ethers } = require("ethers");
 const fs = require('fs');
 
 class Account {
-    constructor(name, provider) {
+    static fromFile(name, provider) {
+        let wallet = new ethers.Wallet(fs.readFileSync(`./.data/${name}/private.key`).toString('utf8'), provider);
+        return new Account(name, wallet);
+    }
+
+    constructor(name, wallet) {
         this.name = name;
-        this.wallet = new ethers.Wallet(fs.readFileSync(`./.data/${name}/private.key`).toString('utf8'), provider);
+        this.wallet = wallet;
     }
 
     async send(address, content){
