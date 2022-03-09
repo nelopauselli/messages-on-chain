@@ -1,14 +1,19 @@
+const { ethers } = require("ethers");
 var Adapter = require('./adapters/jsonRpcAdapter');
 const fs = require('fs'),
     path = require('path');
+const terminal = require('./terminal');
+const settings = require('./settings');
+const PlainEncoder = require('./encoders/plainEncoder');
 
-const url = 'https://rpc-mumbai.maticvigil.com/'; //'http://localhost:7545';
-const adapter = new Adapter(url);
+const publicMessageEncoder = new PlainEncoder();
+
+const adapter = new Adapter(settings.url);
 
 async function main() {
-    console.log('connecting...');
-    let block = await adapter.getBlockNumber();
-    console.log(`block: ${block}`);
+    terminal.addMessage(`connecting to ${settings.url}...`);
+    let currentBlockNumber = await adapter.getBlockNumber();
+    terminal.addMessage(`Current block: ${currentBlockNumber}`);
 
     let dataPath = path.join(__dirname, '.data');
     if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
@@ -23,19 +28,36 @@ async function main() {
         account = await adapter.newAccount('me');
         let wallet = account.wallet;
         fs.writeFileSync(privateKeyPath, wallet.privateKey);
-        console.log('A new wallet was created');
-        console.log(`> Address: ${wallet.address}`);
-        console.log(`> Phrase: ${wallet.mnemonic.phrase}`);
+        terminal.addMessage('A new wallet was created');
+        terminal.addMessage(`\t Address: ${wallet.address}`);
+        terminal.addMessage(`\t Phrase: ${wallet.mnemonic.phrase}`);
     }
     else {
         account = await adapter.createAccount('me');
         let wallet = account.wallet;
-        console.log('Wallet was loaded');
-        console.log(`> Address: ${wallet.address}`);
+        terminal.addMessage('Wallet was loaded.');
+        terminal.addMessage(`\t Address: ${wallet.address}`);
     }
 
     let balance = await account.getBalance();
-    console.log(`Your balance is ${balance}`);
+    terminal.addMessage(`Your balance is ${ethers.utils.formatEther(balance)}`);
+
+    terminal.onSendPublicMessage = function (text) {
+        var content = publicMessageEncoder.encode(text);
+        account.send(settings.messagesOnChainPublicAddress, content);
+    }
+
+    adapter.on("block", async (blockNumber) => {
+        let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress, blockNumber);
+        if (messages && messages.length) {
+            messages.forEach(m => {
+                let text = publicMessageEncoder.decode(m.content);
+                terminal.addMessage(`[PUBLIC MESSAGE] ${text}. Block #${m.block}`);
+            });
+        }
+    });
+
+    terminal.run();
 }
 
 main();

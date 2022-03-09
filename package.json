@@ -22,6 +22,7 @@
   "homepage": "https://github.com/nelopauselli/messages-on-chain#readme",
   "dependencies": {
     "eccrypto": "^1.1.6",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "terminal-kit": "^2.4.0"
   }
 }

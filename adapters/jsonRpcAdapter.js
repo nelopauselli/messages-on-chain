@@ -6,6 +6,10 @@ class JsonRpcAdapter {
         this.provider = new ethers.providers.JsonRpcProvider(url);
     }
 
+    on(eventName, callback){
+        this.provider.on(eventName, callback);
+    }
+
     createAccount(name) {
         return Account.fromFile(name, this.provider);
     }
@@ -21,10 +25,13 @@ class JsonRpcAdapter {
 
     async readMessages(address) {
         let currentBlockNumber = await this.provider.getBlockNumber();
+        return this.readMessages(address, currentBlockNumber);
+    }
 
+    async readMessages(address, blockNumber) {
         let messages = [];
 
-        let block = await this.provider.getBlock(currentBlockNumber);
+        let block = await this.provider.getBlock(blockNumber);
         for (let t = 0; t < block.transactions.length; t++) {
             let transactionHash = block.transactions[t];
             let transaction = await this.provider.getTransaction(transactionHash);
