@@ -12,17 +12,17 @@ class Account {
         this.wallet = wallet;
     }
 
-    async send(address, content){
+    async send(address, content) {
         let data = "0x" + content.toString('hex');
         const tx = await this.wallet.sendTransaction({
             to: address,
             data: data
         });
-        
+
         return tx;
     }
 
-    async getBalance(){
+    async getBalance() {
         return this.wallet.getBalance();
     }
 }

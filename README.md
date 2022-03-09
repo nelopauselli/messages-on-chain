@@ -25,8 +25,8 @@ Generate public key
     openssl rsa -pubout -in private_key.pem -out public_key.pem
 
 # testnet
-* configure Polygon Tesnet Mumbai
-* Claim MATIC in https://testmatic.vercel.app/ or https://faucet.polygon.technology/
+* [Configure Polygon Tesnet Mumbai](https://docs.polygon.technology/docs/develop/network-details/network/)
+* Claim MATIC in https://testmatic.vercel.app/ or https://faucet.polygon.technology/ ()
 
 # References
 * [Asymmetric encryption (Public-key cryptography) with Node.js](https://whyboobo.com/devops/tutorials/asymmetric-encryption-with-nodejs/)

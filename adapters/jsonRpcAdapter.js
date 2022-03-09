@@ -28,7 +28,7 @@ class JsonRpcAdapter {
         for (let t = 0; t < block.transactions.length; t++) {
             let transactionHash = block.transactions[t];
             let transaction = await this.provider.getTransaction(transactionHash);
-            if (transaction.to == address) {
+            if (transaction.to.toLocaleLowerCase() == address.toLocaleLowerCase()) {
                 if (transaction.data) {
                     let raw = transaction.data.slice(2);
                     let message = {
