@@ -25,7 +25,6 @@ async function loadMessagesFromBlock(blockNumber) {
 async function main() {
     terminal.addMessage(`connecting to ${settings.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
-    terminal.setBlockNumber(currentBlockNumber);
 
     let dataPath = path.join(__dirname, '.data');
     if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
@@ -45,15 +44,19 @@ async function main() {
     }
     else {
         account = await adapter.createAccount('me');
+        terminal.addMessage(`Your public address is ${account.wallet.address}`);
     }
 
-    terminal.setAddress(account.wallet.address);
     let balance = await account.getBalance();
-    terminal.setBalance(balance);
+    terminal.addMessage(`Your initial balance is ${balance}`);
 
     terminal.onSendPublicMessage = function (text) {
         var content = publicMessageEncoder.encode(text);
         account.send(settings.messagesOnChainPublicAddress, content);
+    }
+
+    terminal.getBalance = function () {
+        return account.getBalance();
     }
 
     terminal.run();
@@ -64,7 +67,6 @@ async function main() {
     }
 
     adapter.on("block", async (blockNumber) => {
-        terminal.setBlockNumber(blockNumber);
         await loadMessagesFromBlock(blockNumber);
     });
 }
