@@ -6,7 +6,7 @@ class JsonRpcAdapter {
         this.provider = new ethers.providers.JsonRpcProvider(url);
     }
 
-    on(eventName, callback){
+    on(eventName, callback) {
         this.provider.on(eventName, callback);
     }
 
@@ -19,7 +19,7 @@ class JsonRpcAdapter {
         return new Account(name, wallet);
     }
 
-    async getBlockNumber(){
+    async getBlockNumber() {
         return await this.provider.getBlockNumber();
     }
 
@@ -40,6 +40,7 @@ class JsonRpcAdapter {
                     let raw = transaction.data.slice(2);
                     let message = {
                         block: block.number,
+                        from: transaction.from,
                         content: Buffer.from(raw, 'hex')
                     };
 
