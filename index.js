@@ -60,10 +60,9 @@ async function main() {
         account.send(settings.messagesOnChainPublicAddress, content);
     }
 
-
-    for (let blockNumber = currentBlockNumber - 10; blockNumber < currentBlockNumber; blockNumber++) {
-        await loadMessagesFromBlock(blockNumber);
-    }
+    // for (let blockNumber = currentBlockNumber - 1; blockNumber < currentBlockNumber; blockNumber++) {
+    //     await loadMessagesFromBlock(blockNumber);
+    // }
 
     adapter.on("block", async (blockNumber) => {
         await loadMessagesFromBlock(blockNumber);
