@@ -12,9 +12,9 @@ const publicMessageEncoder = new PlainEncoder();
 const adapter = new Adapter(settings.url);
 
 async function main() {
-    terminal.addMessage(`connecting to ${settings.url}...`);
+    terminal.addMessage(`connecting to ${settings.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
-    terminal.addMessage(`Current block: ${currentBlockNumber}`);
+    terminal.addMessage(`Current block: ${currentBlockNumber}`, 'debug');
 
     let dataPath = path.join(__dirname, '.data');
     if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
@@ -29,19 +29,19 @@ async function main() {
         account = await adapter.newAccount('me');
         let wallet = account.wallet;
         fs.writeFileSync(privateKeyPath, wallet.privateKey);
-        terminal.addMessage('A new wallet was created');
-        terminal.addMessage(`\t Address: ${wallet.address}`);
-        terminal.addMessage(`\t Phrase: ${wallet.mnemonic.phrase}`);
+        terminal.addMessage('A new wallet was created', 'info');
+        terminal.addMessage(`\t Address: ${wallet.address}`, 'info');
+        terminal.addMessage(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
     }
     else {
         account = await adapter.createAccount('me');
         let wallet = account.wallet;
-        terminal.addMessage('Wallet was loaded.');
-        terminal.addMessage(`\t Address: ${wallet.address}`);
+        terminal.addMessage('Wallet was loaded.', 'info');
+        terminal.addMessage(`\t Address: ${wallet.address}`, 'info');
     }
 
     let balance = await account.getBalance();
-    terminal.addMessage(`Your balance is ${ethers.utils.formatEther(balance)}`);
+    terminal.addMessage(`Your balance is ${ethers.utils.formatEther(balance)}`, 'debug');
 
     terminal.onSendPublicMessage = function (text) {
         var content = publicMessageEncoder.encode(text);
@@ -53,7 +53,7 @@ async function main() {
         if (messages && messages.length) {
             messages.forEach(m => {
                 let text = publicMessageEncoder.decode(m.content);
-                terminal.addMessage(`[PUBLIC MESSAGE] ${text}. Block #${m.block}`);
+                terminal.addMessage(`${m.from}: ${text}`, 'message');
             });
         }
     });

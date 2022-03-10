@@ -11,10 +11,10 @@ class Terminal {
         this.addMessage(`Current block is ${blockNumber}`);
     }
 
-    addMessage(text) {
+    addMessage(text, level) {
         if (this.messages.length > process.stdout.rows - 2)
             this.messages.shift();
-        this.messages.push(text);
+        this.messages.push({ text, level });
     }
 
     run() {
@@ -41,15 +41,21 @@ class Terminal {
     }
 
     draw() {
+        term.bgBlack();
         setInterval(() => {
             let firstLine = process.stdout.rows - this.messages.length - 2;
-            term.moveTo(1, firstLine).green.bgBlack();
+            term.moveTo(1, firstLine);
 
-            for (let index = 0; index < this.messages.length; index++)
-                term(this.messages[index] + '\n').eraseLine();
+            for (let index = 0; index < this.messages.length; index++) {
+                if (this.messages[index].level == 'message') {
+                    term.magenta(this.messages[index].text + '\n').eraseLine();
+                } else {
+                    term.gray(this.messages[index].text + '\n').eraseLine();
+                }
+            }
 
             term.gray(`\t(${this.messages.length} messages)\n`);
-            term.eraseLine().blue(`> ${this.command}`).black.bgBlack();
+            term.eraseLine().green(`> ${this.command}`).black();
 
             if (this.shutdown) {
                 term.grabInput(false);
