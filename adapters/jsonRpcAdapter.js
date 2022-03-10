@@ -16,7 +16,8 @@ class JsonRpcAdapter {
 
     newAccount(name) {
         let wallet = ethers.Wallet.createRandom();
-        return new Account(name, wallet);
+        let walletConnected = wallet.connect(this.provider);
+        return new Account(name, walletConnected);
     }
 
     async getBlockNumber() {

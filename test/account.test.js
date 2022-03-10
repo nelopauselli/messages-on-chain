@@ -35,12 +35,15 @@ describe("Accounts", function () {
         assert.rejects(() => adapter.createAccount('batman'));
     });
 
-    it("New acount", function () {
+    it("New acount", async function () {
         let account = adapter.newAccount();
         assert(account);
         assert(account.wallet);
         assert(account.wallet.address);
         assert(account.wallet.mnemonic);
+
+        let balance = await account.getBalance();
+        assert.equal(0, balance);
     });
 
     it("Balance of Alice", async function () {
