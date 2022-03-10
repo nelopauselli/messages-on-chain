@@ -1,8 +1,13 @@
 const { ethers } = require("ethers");
+const fs = require('fs'),
+    path = require("path");
 
 var assert = require('assert');
 var Adapter = require('../adapters/jsonRpcAdapter');
 var Encoder = require('../encoders/ecEncoder');
+
+const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
+
 
 describe("EC encoder", function () {
     let adapter, encoder;
@@ -26,7 +31,7 @@ describe("EC encoder", function () {
     };
 
     before(function () {
-        adapter = new Adapter('http://localhost:7545');
+        adapter = new Adapter(settings.url);
         alice = adapter.createAccount('alice');
         bob = adapter.createAccount('bob');
 

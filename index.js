@@ -3,8 +3,9 @@ var Adapter = require('./adapters/jsonRpcAdapter');
 const fs = require('fs'),
     path = require('path');
 const terminal = require('./terminal');
-const settings = require('./settings');
 const PlainEncoder = require('./encoders/plainEncoder');
+
+const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
 
 const publicMessageEncoder = new PlainEncoder();
 

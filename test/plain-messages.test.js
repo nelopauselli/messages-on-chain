@@ -1,15 +1,19 @@
 var assert = require('assert');
+const fs = require('fs'),
+    path = require("path");
 
 var Adapter = require('./../adapters/jsonRpcAdapter');
 var Encoder = require('./../encoders/plainEncoder');
-const settings = require('./../settings');
+
+const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
+
 
 describe("Plain (public) messages", function () {
     let adapter, encoder;
     let alice;
 
     before(function () {
-        adapter = new Adapter('http://localhost:7545');
+        adapter = new Adapter(settings.url);
         encoder = new Encoder();
 
         alice = adapter.createAccount('alice');

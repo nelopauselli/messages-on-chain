@@ -1,12 +1,16 @@
 var assert = require('assert');
+const fs = require('fs'),
+    path = require("path");
 
 var Adapter = require('./../adapters/jsonRpcAdapter');
 
+const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
+
 describe("Accounts", function () {
     let adapter;
-    
+
     before(function () {
-        adapter = new Adapter('http://localhost:7545');
+        adapter = new Adapter(settings.url);
     });
 
     it("Alice", function () {
@@ -31,7 +35,7 @@ describe("Accounts", function () {
         assert.rejects(() => adapter.createAccount('batman'));
     });
 
-    it("New acount", function(){
+    it("New acount", function () {
         let account = adapter.newAccount();
         assert(account);
         assert(account.wallet);
