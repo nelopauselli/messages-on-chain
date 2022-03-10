@@ -45,6 +45,7 @@ describe("Plain (public) messages", function () {
         assert(message.block);
         assert(message.content);
         assert(message.from);
+        assert(message.tx);
         let content = encoder.decode(message.content);
         assert.equal('Hello crypto world!', content);
     });

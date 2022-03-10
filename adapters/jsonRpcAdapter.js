@@ -42,6 +42,7 @@ class JsonRpcAdapter {
                     let message = {
                         block: block.number,
                         from: transaction.from,
+                        tx: transaction.hash,
                         content: Buffer.from(raw, 'hex')
                     };
 

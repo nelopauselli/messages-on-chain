@@ -11,10 +11,10 @@ class Terminal {
         this.addMessage(`Current block is ${blockNumber}`);
     }
 
-    addMessage(text, level) {
+    addMessage(text, level, metadata) {
         if (this.messages.length > process.stdout.rows - 2)
             this.messages.shift();
-        this.messages.push({ text, level });
+        this.messages.push({ text, level, metadata });
     }
 
     run() {
@@ -48,7 +48,7 @@ class Terminal {
 
             for (let index = 0; index < this.messages.length; index++) {
                 if (this.messages[index].level == 'message') {
-                    term.magenta(this.messages[index].text + '\n').eraseLine();
+                    term.magenta(this.messages[index].text).gray(this.messages[index].metadata + '\n').eraseLine();
                 } else {
                     term.gray(this.messages[index].text + '\n').eraseLine();
                 }

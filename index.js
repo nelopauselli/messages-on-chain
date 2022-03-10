@@ -13,6 +13,16 @@ const publicMessageEncoder = new PlainEncoder();
 
 const adapter = new Adapter(settings.url);
 
+async function loadMessagesFromBlock(blockNumber) {
+    let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress, blockNumber);
+    if (messages && messages.length) {
+        messages.forEach(m => {
+            let text = publicMessageEncoder.decode(m.content);
+            terminal.addMessage(`${m.from}: ${text}`, 'message', ` - tx: ${m.tx} (${m.block})`);
+        });
+    }
+}
+
 async function main() {
     terminal.addMessage(`connecting to ${settings.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
@@ -50,14 +60,13 @@ async function main() {
         account.send(settings.messagesOnChainPublicAddress, content);
     }
 
+
+    for (let blockNumber = currentBlockNumber - 10; blockNumber < currentBlockNumber; blockNumber++) {
+        await loadMessagesFromBlock(blockNumber);
+    }
+
     adapter.on("block", async (blockNumber) => {
-        let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress, blockNumber);
-        if (messages && messages.length) {
-            messages.forEach(m => {
-                let text = publicMessageEncoder.decode(m.content);
-                terminal.addMessage(`${m.from}: ${text}`, 'message');
-            });
-        }
+        await loadMessagesFromBlock(blockNumber);
     });
 
     terminal.run();
