@@ -1,13 +1,12 @@
 const { ethers } = require("ethers");
-const fs = require('fs'),
-    path = require("path");
+const path = require("path");
 
 var assert = require('assert');
 var Adapter = require('../adapters/jsonRpcAdapter');
 var Encoder = require('../encoders/ecEncoder');
 
-const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
-
+const Settings = require('./../settings');
+let settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
 
 describe("EC encoder", function () {
     let adapter, encoder;

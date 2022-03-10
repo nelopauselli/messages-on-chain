@@ -4,8 +4,10 @@ const fs = require('fs'),
     path = require('path');
 const terminal = require('./terminal');
 const PlainEncoder = require('./encoders/plainEncoder');
+const Settings = require('./settings.js');
 
-const settings = JSON.parse(fs.readFileSync(path.join(__dirname, 'settings.json')));
+const network = process.argv.length > 2 ? process.argv[2] : "default";
+const settings = Settings.from(path.join(__dirname, 'settings.json'), network);
 
 const publicMessageEncoder = new PlainEncoder();
 
