@@ -1,4 +1,3 @@
-const { ethers } = require("ethers");
 var Adapter = require('./adapters/jsonRpcAdapter');
 const fs = require('fs'),
     path = require('path');
@@ -26,7 +25,7 @@ async function loadMessagesFromBlock(blockNumber) {
 async function main() {
     terminal.addMessage(`connecting to ${settings.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
-    terminal.addMessage(`Current block: ${currentBlockNumber}`, 'debug');
+    terminal.setBlockNumber(currentBlockNumber);
 
     let dataPath = path.join(__dirname, '.data');
     if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
@@ -41,34 +40,33 @@ async function main() {
         account = await adapter.newAccount('me');
         let wallet = account.wallet;
         fs.writeFileSync(privateKeyPath, wallet.privateKey);
-        terminal.addMessage('A new wallet was created', 'info');
         terminal.addMessage(`\t Address: ${wallet.address}`, 'info');
         terminal.addMessage(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
     }
     else {
         account = await adapter.createAccount('me');
-        let wallet = account.wallet;
-        terminal.addMessage('Wallet was loaded.', 'info');
-        terminal.addMessage(`\t Address: ${wallet.address}`, 'info');
     }
 
+    terminal.setAddress(account.wallet.address);
     let balance = await account.getBalance();
-    terminal.addMessage(`Your balance is ${ethers.utils.formatEther(balance)}`, 'debug');
+    terminal.setBalance(balance);
 
     terminal.onSendPublicMessage = function (text) {
         var content = publicMessageEncoder.encode(text);
         account.send(settings.messagesOnChainPublicAddress, content);
     }
 
-    // for (let blockNumber = currentBlockNumber - 1; blockNumber < currentBlockNumber; blockNumber++) {
-    //     await loadMessagesFromBlock(blockNumber);
-    // }
+    terminal.run();
+
+    for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
+        terminal.addMessage(`Searching message in block ${blockNumber}`);
+        await loadMessagesFromBlock(blockNumber);
+    }
 
     adapter.on("block", async (blockNumber) => {
+        terminal.setBlockNumber(blockNumber);
         await loadMessagesFromBlock(blockNumber);
     });
-
-    terminal.run();
 }
 
 main();
