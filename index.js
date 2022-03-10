@@ -44,11 +44,11 @@ async function main() {
     }
     else {
         account = await adapter.createAccount('me');
-        terminal.log(`Your public address is ${account.wallet.address}`);
+        terminal.log(`Your public address is ${account.wallet.address}`, 'info');
     }
 
     let balance = await account.getBalance();
-    terminal.log(`Your initial balance is ${balance}`);
+    terminal.log(`Your initial balance is ${balance}`, 'info');
 
     terminal.onSendPublicMessage = function (text) {
         var content = publicMessageEncoder.encode(text);
@@ -62,7 +62,7 @@ async function main() {
     terminal.run();
 
     for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
-        terminal.log(`Searching message in block ${blockNumber}`);
+        terminal.log(`Searching message in block ${blockNumber}`, 'info');
         await loadMessagesFromBlock(blockNumber);
     }
 
