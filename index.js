@@ -17,13 +17,13 @@ async function loadMessagesFromBlock(blockNumber) {
     if (messages && messages.length) {
         messages.forEach(m => {
             let text = publicMessageEncoder.decode(m.content);
-            terminal.addMessage(`${m.from}: ${text}`, 'message', ` - tx: ${m.tx} (${m.block})`);
+            terminal.log(`${m.from}: ${text}`, 'message', ` - tx: ${m.tx} (${m.block})`);
         });
     }
 }
 
 async function main() {
-    terminal.addMessage(`connecting to ${settings.url}...`, 'debug');
+    terminal.log(`connecting to ${settings.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
 
     let dataPath = path.join(__dirname, '.data');
@@ -39,16 +39,16 @@ async function main() {
         account = await adapter.newAccount('me');
         let wallet = account.wallet;
         fs.writeFileSync(privateKeyPath, wallet.privateKey);
-        terminal.addMessage(`\t Address: ${wallet.address}`, 'info');
-        terminal.addMessage(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
+        terminal.log(`\t Address: ${wallet.address}`, 'info');
+        terminal.log(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
     }
     else {
         account = await adapter.createAccount('me');
-        terminal.addMessage(`Your public address is ${account.wallet.address}`);
+        terminal.log(`Your public address is ${account.wallet.address}`);
     }
 
     let balance = await account.getBalance();
-    terminal.addMessage(`Your initial balance is ${balance}`);
+    terminal.log(`Your initial balance is ${balance}`);
 
     terminal.onSendPublicMessage = function (text) {
         var content = publicMessageEncoder.encode(text);
@@ -62,7 +62,7 @@ async function main() {
     terminal.run();
 
     for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
-        terminal.addMessage(`Searching message in block ${blockNumber}`);
+        terminal.log(`Searching message in block ${blockNumber}`);
         await loadMessagesFromBlock(blockNumber);
     }
 

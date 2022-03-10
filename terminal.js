@@ -7,7 +7,7 @@ class Terminal {
         this.command = "";
     }
 
-    addMessage(text, level, metadata) {
+    log(text, level, metadata) {
         if (this.messages.length > process.stdout.rows - 2)
             this.messages.shift();
         this.messages.push({ text, level, metadata });
@@ -36,7 +36,17 @@ class Terminal {
                         .then(balance => console.log(`Your balance is ${ethers.utils.formatEther(balance)}`));
                     return true
                 default:
-                    this.onSendPublicMessage(line);
+                    terminal.question('public or private? ', (answer) => {
+                        if (answer === 'public') {
+                            this.onSendPublicMessage(line);
+                        } else if (answer === 'private') {
+                            terminal.question('address? ', (address) => {
+                                console.log(`I sorry, private messages isn't implemented`)
+                            })
+                        } else {
+                            console.log(`I don't understand, sorry`)
+                        }
+                    });
             }
 
             if (terminal.isMuted())
@@ -56,7 +66,7 @@ class Terminal {
                 let message = this.messages.shift();
                 console.log(message.text);
             }
-        }, 700)
+        }, 100)
     }
 }
 
