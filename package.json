@@ -4,7 +4,9 @@
   "description": "Message on chain",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node index",
+    "mumbai": "node index mumbai"
   },
   "repository": {
     "type": "git",
