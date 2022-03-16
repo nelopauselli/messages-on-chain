@@ -75,7 +75,7 @@ async function main() {
             terminal.log('private message sent', 'info');
         }
         else {
-            terminal.log('No se encontró transacción de ' + address + ' para determinar la clave pública')
+            terminal.log('Transaction from ' + address + ' not found to get publickey')
         }
     }
 
