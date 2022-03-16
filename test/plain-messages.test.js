@@ -9,13 +9,14 @@ let settings = Settings.from(path.join(__dirname, './settings.json'), 'default')
 
 describe("Plain (public) messages", function () {
     let adapter, encoder;
-    let alice;
+    let alice, bob;
 
     before(function () {
         adapter = new Adapter(settings.url);
         encoder = new Encoder();
 
         alice = adapter.createAccount('alice');
+        bob = adapter.createAccount('bob');
     });
 
     it("Send plain message", async function () {
@@ -48,5 +49,20 @@ describe("Plain (public) messages", function () {
         assert(message.tx);
         let content = encoder.decode(message.content);
         assert.equal('Hello crypto world!', content);
+    });
+
+    it("Send and find plain message", async function () {
+        let lastBlockNumber = await adapter.getBlockNumber();
+
+        let buffer = encoder.encode('Hello crypto world!');
+        let tx1 = await alice.send(settings.messagesOnChainPublicAddress, buffer);
+        await tx1.wait();
+        let tx2 = await bob.send(settings.messagesOnChainPublicAddress, buffer);
+        await tx2.wait();
+
+        let tx3 = await adapter.findAnyTransaction(alice.wallet.address);
+        assert(tx3);
+        assert.equal(alice.wallet.address, tx3.from);
+        assert.equal(lastBlockNumber + 1, tx3.block);
     });
 })

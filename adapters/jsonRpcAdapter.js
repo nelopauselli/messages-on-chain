@@ -53,6 +53,25 @@ class JsonRpcAdapter {
 
         return messages;
     }
+
+    async findAnyTransaction(address) {
+        let blockNumber = await this.getBlockNumber();
+        let limit = Math.min(blockNumber - 100, 0);
+        while (blockNumber > limit) {
+            let block = await this.provider.getBlock(blockNumber);
+            for (let t = 0; t < block.transactions.length; t++) {
+                let transactionHash = block.transactions[t];
+                let transaction = await this.provider.getTransaction(transactionHash);
+                if (transaction.from.toLocaleLowerCase() == address.toLocaleLowerCase()) {
+                    return transaction;
+                }
+            }
+
+            blockNumber--;
+        }
+
+        return null;
+    }
 }
 
 module.exports = JsonRpcAdapter;

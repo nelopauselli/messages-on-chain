@@ -13,16 +13,23 @@ class Terminal {
 
         let prefix, posfix;
         if (level === 'debug') {
-            prefix = '\x1b[2m';
-            posfix = '\x1b[0m';
+            prefix = '\x1b[2;37m';
+            posfix = '\x1b[0;37m';
         } else if (level === 'info') {
-            prefix = '\x1b[2m';
-            posfix = '\x1b[0m';
+            prefix = '\x1b[2;32m';
+            posfix = '\x1b[0;37m';
+        } else if (level === 'public') {
+            prefix = `\x1b[0;37m`;
+            posfix = `\x1b[0;37m`;
+        } else if (level === 'private') {
+            prefix = '\x1b[0;32m';
+            posfix = '\x1b[0;37m';
         } else {
             prefix = '';
             posfix = '';
         }
 
+        prefix += ` [${level}] `;
         this.messages.push({ text: `${prefix}${text}${posfix}`, level, metadata });
     }
 
@@ -58,7 +65,7 @@ class Terminal {
                     this.onSendPublicMessage(line);
                 } else if (answer === 'private') {
                     terminal.question('address? ', (address) => {
-                        console.log(`I sorry, private message isn't implemented`)
+                        this.onSendPrivateMessage(address, line);
                     })
                 } else {
                     console.log(`I don't understand, sorry`)
