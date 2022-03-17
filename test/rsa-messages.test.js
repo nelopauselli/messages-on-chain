@@ -39,7 +39,7 @@ describe("Encoding messages using RSA", function () {
 
         let messages = await adapter.readMessages(bob.wallet.address);
         assert(messages);
-        assert(1, messages.length);
+        assert.equal(1, messages.length);
 
         let message = messages[0];
         let content = await encoder.decode('bob', message.content);
