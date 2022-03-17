@@ -11,8 +11,8 @@ export interface Adapter {
     createAccount(name: string): Account;
     newAccount(name: string): Account;
     getBlockNumber(): Promise<number>;
-    readMessages(address: string): Promise<TransactionMessage[]>;
-    readMessagesFromBlock(address: string, blockNumber: number): Promise<TransactionMessage[]>;
+    readMessages(addresses: string[]): Promise<TransactionMessage[]>;
+    readMessagesFromBlock(addresses: string[], blockNumber: number): Promise<TransactionMessage[]>;
     findAnyTransaction(address: string): Promise<ethers.providers.TransactionResponse | null>;
 }
 
@@ -41,26 +41,28 @@ export class JsonRpcAdapter implements Adapter {
         return await this.provider.getBlockNumber();
     }
 
-    async readMessages(address: string): Promise<TransactionMessage[]> {
+    async readMessages(addresses: string[]): Promise<TransactionMessage[]> {
         let currentBlockNumber = await this.provider.getBlockNumber();
-        return this.readMessagesFromBlock(address, currentBlockNumber);
+        return this.readMessagesFromBlock(addresses, currentBlockNumber);
     }
 
-    async readMessagesFromBlock(address: string, blockNumber: number): Promise<TransactionMessage[]> {
+    async readMessagesFromBlock(addresses: string[], blockNumber: number): Promise<TransactionMessage[]> {
         let messages: TransactionMessage[] = [];
+        addresses = addresses.map(a => a.toLowerCase());
 
         let block = await this.provider.getBlock(blockNumber);
         for (let t = 0; t < block.transactions.length; t++) {
             let transactionHash = block.transactions[t];
             let transaction = await this.provider.getTransaction(transactionHash);
-            if (transaction.to && transaction.to.toLocaleLowerCase() == address.toLocaleLowerCase()) {
+            if (transaction.to && addresses.includes(transaction.to.toLowerCase())) {
                 if (transaction.data) {
                     let raw = transaction.data.slice(2);
                     let message = new TransactionMessage(
-                        Buffer.from(raw, 'hex'), 
+                        transaction.to,
+                        Buffer.from(raw, 'hex'),
                         transaction.from,
-                         transaction.hash, 
-                         block.number);
+                        transaction.hash,
+                        block.number);
 
                     messages.push(message);
                 }

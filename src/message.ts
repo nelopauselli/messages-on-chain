@@ -11,12 +11,14 @@ export class Message {
 }
 
 export class TransactionMessage {
+    to: string;
     content: Buffer;
     from: string;
     tx: string;
     block: number;
 
-    constructor(content: Buffer, from: string, tx: string, block: number) {
+    constructor(to: string, content: Buffer, from: string, tx: string, block: number) {
+        this.to = to;
         this.content = content;
         this.from = from;
         this.tx = tx;

@@ -23,19 +23,16 @@ const adapter: Adapter = new JsonRpcAdapter(settings.url);
 let account: Account;
 
 async function loadMessagesFromBlock(blockNumber: number) {
-    let messages = await adapter.readMessagesFromBlock(settings.messagesOnChainPublicAddress, blockNumber);
+    let messages = await adapter.readMessagesFromBlock([settings.messagesOnChainPublicAddress, account.wallet.address], blockNumber);
     if (messages && messages.length) {
-        messages.forEach((m: TransactionMessage) => {
-            let text = publicMessageEncoder.decode(m.content);
-            terminal.log(`${m.from}: ${text}`, 'public', ` - tx: ${m.tx} (${m.block})`);
-        });
-    }
-
-    let messages2 = await adapter.readMessagesFromBlock(account.wallet.address, blockNumber);
-    if (messages2 && messages2.length) {
-        messages2.forEach(async (m: TransactionMessage) => {
-            let text = await privateMessageEncoder.decode(account.wallet.privateKey, m.content);
-            terminal.log(`${m.from}: ${text}`, 'private', ` - tx: ${m.tx} (${m.block})`);
+        messages.forEach(async (m: TransactionMessage) => {
+            if (m.to === account.wallet.address) {
+                let text = await privateMessageEncoder.decode(account.wallet.privateKey, m.content);
+                terminal.log(`${m.from}: ${text}`, 'private', ` - tx: ${m.tx} (${m.block})`);
+            } else {
+                let text = publicMessageEncoder.decode(m.content);
+                terminal.log(`${m.from}: ${text}`, 'public', ` - tx: ${m.tx} (${m.block})`);
+            }
         });
     }
 }

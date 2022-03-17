@@ -1,11 +1,11 @@
-import { ethers, Wallet } from "ethers";
+import { BigNumber, ethers, Wallet } from "ethers";
 import fs from 'fs';
 
 export class Account {
     name: string;
     wallet: ethers.Wallet;
 
-    static fromFile(name: string, provider: ethers.providers.Provider) {
+    static fromFile(name: string, provider: ethers.providers.Provider): Account {
         let wallet = new ethers.Wallet(fs.readFileSync(`./.data/${name}/private.key`).toString('utf8'), provider);
         return new Account(name, wallet);
     }
@@ -15,17 +15,15 @@ export class Account {
         this.wallet = wallet;
     }
 
-    async send(address:string, content:Buffer) {
+    send(address: string, content: Buffer): Promise<ethers.providers.TransactionResponse> {
         let data = "0x" + content.toString('hex');
-        const tx = await this.wallet.sendTransaction({
+        return this.wallet.sendTransaction({
             to: address,
             data: data
         });
-
-        return tx;
     }
 
-    async getBalance() {
+    getBalance(): Promise<BigNumber> {
         return this.wallet.getBalance();
     }
 }
