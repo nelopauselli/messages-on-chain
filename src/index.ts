@@ -1,32 +1,39 @@
-var Adapter = require('./adapters/jsonRpcAdapter');
-const fs = require('fs'),
-    path = require('path');
-const terminal = require('./terminal');
-const PlainEncoder = require('./encoders/plainEncoder');
-const EcEncoder = require('./encoders/ecEncoder');
-const Settings = require('./settings.js');
+import { Adapter, JsonRpcAdapter } from './adapters/jsonRpcAdapter';
+import fs from 'fs';
+import path from 'path';
+
+import { Account } from './account';
+import { TransactionMessage } from './message';
+
+import { Terminal } from './terminal';
+
+const terminal: Terminal = new Terminal();
+
+import { PlainEncoder } from './encoders/plainEncoder';
+import { EcEncoder } from './encoders/ecEncoder';
+import { Settings } from './settings.js';
 
 const network = process.argv.length > 2 ? process.argv[2] : "default";
-const settings = Settings.from(path.join(__dirname, 'settings.json'), network);
+const settings = Settings.from(path.join(__dirname, './../settings.json'), network);
 
 const publicMessageEncoder = new PlainEncoder();
 const privateMessageEncoder = new EcEncoder();
 
-const adapter = new Adapter(settings.url);
-let account;
+const adapter: Adapter = new JsonRpcAdapter(settings.url);
+let account: Account;
 
-async function loadMessagesFromBlock(blockNumber) {
-    let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress, blockNumber);
+async function loadMessagesFromBlock(blockNumber: number) {
+    let messages = await adapter.readMessagesFromBlock(settings.messagesOnChainPublicAddress, blockNumber);
     if (messages && messages.length) {
-        messages.forEach(m => {
+        messages.forEach((m: TransactionMessage) => {
             let text = publicMessageEncoder.decode(m.content);
             terminal.log(`${m.from}: ${text}`, 'public', ` - tx: ${m.tx} (${m.block})`);
         });
     }
 
-    let messages2 = await adapter.readMessages(account.wallet.address, blockNumber);
+    let messages2 = await adapter.readMessagesFromBlock(account.wallet.address, blockNumber);
     if (messages2 && messages2.length) {
-        messages2.forEach(async m => {
+        messages2.forEach(async (m: TransactionMessage) => {
             let text = await privateMessageEncoder.decode(account.wallet.privateKey, m.content);
             terminal.log(`${m.from}: ${text}`, 'private', ` - tx: ${m.tx} (${m.block})`);
         });
@@ -60,7 +67,7 @@ async function main() {
     let balance = await account.getBalance();
     terminal.log(`Your initial balance is ${balance}`, 'info');
 
-    terminal.onSendPublicMessage = function (text) {
+    terminal.onSendPublicMessage = async (text) => {
         var content = publicMessageEncoder.encode(text);
         account.send(settings.messagesOnChainPublicAddress, content);
     }
@@ -75,7 +82,7 @@ async function main() {
             terminal.log('private message sent', 'info');
         }
         else {
-            terminal.log('Transaction from ' + address + ' not found to get publickey')
+            terminal.log('Transaction from ' + address + ' not found to get publickey', 'error');
         }
     }
 
@@ -90,7 +97,7 @@ async function main() {
         await loadMessagesFromBlock(blockNumber);
     }
 
-    adapter.on("block", async (blockNumber) => {
+    adapter.onBlock(async (blockNumber: number) => {
         await loadMessagesFromBlock(blockNumber);
     });
 }

@@ -1,7 +1,7 @@
 var assert = require('assert');
 const path = require("path");
 
-var Adapter = require('./../adapters/jsonRpcAdapter');
+var Adapter = require('./../dist/adapters/jsonRpcAdapter');
 
 const Settings = require('./../settings');
 let settings = Settings.from(path.join(__dirname, './settings.json'), 'default');

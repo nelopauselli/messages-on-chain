@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "node index",
+    "start": "tsc & node dist/index",
     "mumbai": "node index mumbai"
   },
   "repository": {
@@ -26,5 +26,8 @@
     "eccrypto": "^1.1.6",
     "ethers": "^5.5.4",
     "serverline": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/eccrypto": "^1.1.3"
   }
 }

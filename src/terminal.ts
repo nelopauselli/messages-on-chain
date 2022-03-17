@@ -1,13 +1,25 @@
 const { ethers } = require("ethers");
 const terminal = require('serverline')
+import { BigNumber } from 'ethers';
+import { Message } from './message';
 
-class Terminal {
+export interface OnSendPublicMessage { (text: string): Promise<void> }
+export interface OnSendPrivateMessage { (address: string, text: string): Promise<void> }
+export interface GetBalanceCallback { (): Promise<BigNumber> }
+
+export class Terminal {
+    messages: Message[];
+    command: string;
+    onSendPublicMessage: OnSendPublicMessage | undefined = undefined;
+    onSendPrivateMessage: OnSendPrivateMessage | undefined = undefined;
+    getBalance: GetBalanceCallback | undefined = undefined;
+
     constructor() {
         this.messages = [];
         this.command = "";
     }
 
-    log(text, level, metadata) {
+    log(text: string, level: string, metadata?: string) {
         if (this.messages.length > process.stdout.rows - 2)
             this.messages.shift();
 
@@ -30,7 +42,7 @@ class Terminal {
         }
 
         prefix += ` [${level}] `;
-        this.messages.push({ text: `${prefix}${text}${posfix}`, level, metadata });
+        this.messages.push(new Message(`${prefix}${text}${posfix}`, level, metadata));
     }
 
     run() {
@@ -41,14 +53,17 @@ class Terminal {
 
         terminal.setPrompt('\x1b[37m> ')
 
-        terminal.on('line', (line) => {
+        terminal.on('line', (line: string) => {
             switch (line) {
                 case 'help':
                     this.help();
                     break
                 case 'balance':
-                    this.getBalance()
-                        .then(balance => console.log(`\x1b[33mYour balance is \x1b[32m${ethers.utils.formatEther(balance)}`));
+                    if (this.getBalance)
+                        this.getBalance()
+                            .then(balance => console.log(`\x1b[33mYour balance is \x1b[32m${ethers.utils.formatEther(balance)}`));
+                    else
+                        this.log('Balance is not implemented', 'error');
                     return true;
                 case 'clear':
                     process.stdout.write('\x1Bc');
@@ -56,16 +71,22 @@ class Terminal {
                 case 'exit':
                     process.exit(0);
                 case '':
-                    this.log('Enter the text of your message or type \'help\'');
+                    this.log('Enter the text of your message or type \'help\'', 'warn');
                     return true;
             }
 
-            terminal.question('public or private? ', (answer) => {
+            terminal.question('public or private? ', (answer: string) => {
                 if (answer === 'public') {
-                    this.onSendPublicMessage(line);
+                    if (this.onSendPublicMessage)
+                        this.onSendPublicMessage(line);
+                    else
+                        this.log('Public message is not implemented', 'error');
                 } else if (answer === 'private') {
-                    terminal.question('address? ', (address) => {
-                        this.onSendPrivateMessage(address, line);
+                    terminal.question('address? ', (address: string) => {
+                        if (this.onSendPrivateMessage)
+                            this.onSendPrivateMessage(address, line);
+                        else
+                            this.log('Private message is not implemented', 'error');
                     })
                 } else {
                     console.log(`I don't understand, sorry`)
@@ -74,10 +95,12 @@ class Terminal {
 
             if (terminal.isMuted())
                 terminal.setMuted(false)
+
+            return false;
         })
 
-        terminal.on('SIGINT', function (rl) {
-            rl.question('Confirm exit: ', (answer) => answer.match(/^y(es)?$/i) ? process.exit(0) : rl.output.write('\x1B[1K> '))
+        terminal.on('SIGINT', function (rl: any) {
+            rl.question('Confirm exit: ', (answer: string) => answer.match(/^y(es)?$/i) ? process.exit(0) : rl.output.write('\x1B[1K> '))
         })
 
         this.help();
@@ -88,8 +111,9 @@ class Terminal {
     displayFakeLog() {
         setInterval(() => {
             if (this.messages.length > 0) {
-                let message = this.messages.shift();
-                console.log(message.text);
+                let message: Message | undefined = this.messages.shift();
+                if (message)
+                    console.log(message.text);
             }
         }, 100)
     }
@@ -104,5 +128,3 @@ class Terminal {
         console.log('\x1b[33m\ttext of my message');
     }
 }
-
-module.exports = new Terminal();

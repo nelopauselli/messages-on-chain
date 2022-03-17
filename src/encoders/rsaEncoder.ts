@@ -1,10 +1,10 @@
-const crypto = require('crypto');
-const fs = require("fs");
-const path = require("path");
+import * as crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 class RsaEncoder {
-    encode(to, content) {
-        return new Promise(function (resolve, reject) {
+    encode(to:string, content:string) {
+        return new Promise(function (resolve) {
             console.log('loading public key for ' + to);
             let publicKey = fs.readFileSync(path.join(__dirname, '../.data', to, 'rsa.public_key.pem'), 'utf8');
 
@@ -19,8 +19,8 @@ class RsaEncoder {
             resolve(buffer);
         });
     }
-    decode(from, content) {
-        return new Promise(function (resolve, reject) {
+    decode(from:string, content:Buffer) {
+        return new Promise(function (resolve) {
             let privateKey = fs.readFileSync(path.join(__dirname, '../.data', from, 'rsa.pem'), 'utf8');
 
             let raw = crypto.privateDecrypt(
