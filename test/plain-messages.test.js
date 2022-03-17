@@ -63,6 +63,6 @@ describe("Plain (public) messages", function () {
         let tx3 = await adapter.findAnyTransaction(alice.wallet.address);
         assert(tx3);
         assert.equal(alice.wallet.address, tx3.from);
-        assert.equal(lastBlockNumber + 1, tx3.block);
+        assert.equal(lastBlockNumber + 1, tx3.blockNumber);
     });
 })
