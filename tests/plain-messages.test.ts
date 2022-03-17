@@ -1,19 +1,22 @@
-var assert = require('assert');
-const path = require("path");
+import { ok, equal } from 'assert';
+import path from 'path';
 
-var Adapter = require('./../adapters/jsonRpcAdapter');
-var Encoder = require('./../encoders/plainEncoder');
-
-const Settings = require('./../settings');
-let settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
+import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
+import { PlainEncoder } from './../src/encoders/plainEncoder';
+import { Account } from './../src/account';
+import { Settings } from './../src/settings';
 
 describe("Plain (public) messages", function () {
-    let adapter, encoder;
-    let alice, bob;
+    let adapter: Adapter;
+    let encoder: PlainEncoder;
+    let alice: Account;
+    let bob: Account;
+    let settings: Settings;
 
     before(function () {
-        adapter = new Adapter(settings.url);
-        encoder = new Encoder();
+        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(settings.url);
+        encoder = new PlainEncoder();
 
         alice = adapter.createAccount('alice');
         bob = adapter.createAccount('bob');
@@ -23,10 +26,10 @@ describe("Plain (public) messages", function () {
         let buffer = encoder.encode('Hello crypto world!');
         let tx = await alice.send(settings.messagesOnChainPublicAddress, buffer);
 
-        assert(tx);
-        assert(tx.hash);
-        assert(tx.data);
-        assert.equal('0x48656c6c6f2063727970746f20776f726c6421', tx.data);
+        ok(tx);
+        ok(tx.hash);
+        ok(tx.data);
+        equal('0x48656c6c6f2063727970746f20776f726c6421', tx.data);
     });
 
     it("Send and read plain message", async function () {
@@ -37,18 +40,18 @@ describe("Plain (public) messages", function () {
         await tx.wait();
 
         let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress);
-        assert(messages);
-        assert.equal(1, messages.length);
+        ok(messages);
+        equal(1, messages.length);
 
         let message = messages[0];
-        assert.equal(lastBlockNumber + 1, message.block);
-        assert(message);
-        assert(message.block);
-        assert(message.content);
-        assert(message.from);
-        assert(message.tx);
+        equal(lastBlockNumber + 1, message.block);
+        ok(message);
+        ok(message.block);
+        ok(message.content);
+        ok(message.from);
+        ok(message.tx);
         let content = encoder.decode(message.content);
-        assert.equal('Hello crypto world!', content);
+        equal('Hello crypto world!', content);
     });
 
     it("Send and find plain message", async function () {
@@ -61,8 +64,8 @@ describe("Plain (public) messages", function () {
         await tx2.wait();
 
         let tx3 = await adapter.findAnyTransaction(alice.wallet.address);
-        assert(tx3);
-        assert.equal(alice.wallet.address, tx3.from);
-        assert.equal(lastBlockNumber + 1, tx3.blockNumber);
+        ok(tx3);
+        equal(alice.wallet.address, tx3.from);
+        equal(lastBlockNumber + 1, tx3.blockNumber);
     });
 })

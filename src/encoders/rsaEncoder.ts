@@ -2,8 +2,8 @@ import * as crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-class RsaEncoder {
-    encode(to:string, content:string) {
+export class RsaEncoder {
+    encode(to: string, content: string): Promise<Buffer> {
         return new Promise(function (resolve) {
             console.log('loading public key for ' + to);
             let publicKey = fs.readFileSync(path.join(__dirname, '../.data', to, 'rsa.public_key.pem'), 'utf8');
@@ -19,7 +19,7 @@ class RsaEncoder {
             resolve(buffer);
         });
     }
-    decode(from:string, content:Buffer) {
+    decode(from: string, content: Buffer): Promise<string> {
         return new Promise(function (resolve) {
             let privateKey = fs.readFileSync(path.join(__dirname, '../.data', from, 'rsa.pem'), 'utf8');
 
@@ -37,5 +37,3 @@ class RsaEncoder {
         });
     }
 }
-
-module.exports = RsaEncoder;

@@ -28,7 +28,7 @@ export class EcEncoder {
         return recoveredPubKey;
     }
 
-    async encode(publicKey: string, content: string) {
+    async encode(publicKey: string, content: string) :Promise<Buffer>{
         let raw = await eccrypto.encrypt(
             Buffer.from(publicKey.substring(2), 'hex'),
             Buffer.from(content, 'utf8'));
@@ -42,7 +42,7 @@ export class EcEncoder {
         return Buffer.from(json, 'utf8');
     }
 
-    decode(privateKey: string, content: Buffer) {
+    decode(privateKey: string, content: Buffer):Promise<Buffer> {
         let obj = JSON.parse(content.toString('utf8'));
         let raw = {
             iv: Buffer.from(obj.iv, 'hex'),

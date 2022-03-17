@@ -1,23 +1,24 @@
-const { ethers } = require("ethers");
-const path = require("path");
+import { ok, equal } from 'assert';
+import { BigNumber } from "ethers";
+import path from 'path';
 
-var assert = require('assert');
-var Adapter = require('../adapters/jsonRpcAdapter');
-var Encoder = require('../encoders/ecEncoder');
-
-const Settings = require('./../settings');
-let settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
+import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
+import { EcEncoder } from './../src/encoders/ecEncoder';
+import { Account } from './../src/account';
+import { Settings } from './../src/settings';
 
 describe("EC encoder", function () {
-    let adapter, encoder;
-    let alice, bob;
+    let adapter: Adapter;
+    let encoder: EcEncoder;
+    let alice: Account;
+    let settings: Settings;
 
     let tx = {
         nonce: 149,
-        gasPrice: ethers.BigNumber.from('0x04a817c800'),
-        gasLimit: ethers.BigNumber.from('0x5338'),
+        gasPrice: BigNumber.from('0x04a817c800'),
+        gasLimit: BigNumber.from('0x5338'),
         to: '0x1111111111111111111111111111111111111111',
-        value: ethers.BigNumber.from('0x00'),
+        value: BigNumber.from('0x00'),
         data: '0x48656c6c6f2063727970746f20776f726c6421',
         chainId: 1337,
         v: 2710,
@@ -30,20 +31,20 @@ describe("EC encoder", function () {
     };
 
     before(function () {
-        adapter = new Adapter(settings.url);
+        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(settings.url);
         alice = adapter.createAccount('alice');
-        bob = adapter.createAccount('bob');
 
-        encoder = new Encoder();
-        assert.equal(tx.from, alice.wallet.address);
+        encoder = new EcEncoder();
+        equal(tx.from, alice.wallet.address);
     });
 
     it("Get public key from tx", async function () {
         let publicKey = await encoder.getPublicKey(tx);
 
-        assert(alice.wallet.publicKey);
-        assert(publicKey);
-        assert.equal(publicKey, alice.wallet.publicKey);
+        ok(alice.wallet.publicKey);
+        ok(publicKey);
+        equal(publicKey, alice.wallet.publicKey);
     });
 
     it("Encode and Decode", async function () {
@@ -51,7 +52,7 @@ describe("EC encoder", function () {
 
         let buffer = await encoder.encode(publicKey, 'Hello Alice!');
         let result = await encoder.decode(alice.wallet.privateKey, buffer);
-        assert.equal('Hello Alice!', result);
+        equal('Hello Alice!', result);
     });
 
 })
