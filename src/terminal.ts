@@ -97,14 +97,13 @@ export class Terminal {
                 terminal.setMuted(false)
 
             return false;
-        })
+        });
 
         terminal.on('SIGINT', function (rl: any) {
             rl.question('Confirm exit: ', (answer: string) => answer.match(/^y(es)?$/i) ? process.exit(0) : rl.output.write('\x1B[1K> '))
         })
 
         this.help();
-
         this.displayFakeLog();
     }
 
