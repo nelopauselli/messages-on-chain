@@ -1,5 +1,5 @@
 import { BigNumber, ethers, Wallet } from "ethers";
-import fs from 'fs';
+import * as fs from 'fs';
 
 export class Account {
     name: string;

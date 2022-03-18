@@ -1,5 +1,5 @@
 import { ok, equal } from 'assert';
-import path from 'path';
+import * as path from 'path';
 import { Configuration } from './../src/configuration';
 
 describe("Settings", function () {

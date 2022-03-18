@@ -1,6 +1,6 @@
 import {ok, equal, rejects} from 'assert';
 import { BigNumber } from 'ethers';
-import path from 'path';
+import * as path from 'path';
 
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
 import { Configuration } from './../src/configuration';

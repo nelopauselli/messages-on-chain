@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Configuration } from 'src/configuration';
 
 export class RsaEncoder {

@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import { TransactionMessage } from "./../message";
 import { Account } from './../account';
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 import { Configuration } from "./../configuration";
 
 interface OnBlockCallback<T1, T2 = Promise<void>> {

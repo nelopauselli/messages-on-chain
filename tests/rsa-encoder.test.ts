@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 import { ok, equal, rejects, notEqual } from 'assert';
 import { RsaEncoder } from './../src/encoders/rsaEncoder';
 import { Configuration } from './../src/configuration';

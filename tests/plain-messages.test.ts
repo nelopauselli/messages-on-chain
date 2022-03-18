@@ -1,5 +1,5 @@
 import { ok, equal } from 'assert';
-import path from 'path';
+import * as path from 'path';
 
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
 import { PlainEncoder } from './../src/encoders/plainEncoder';

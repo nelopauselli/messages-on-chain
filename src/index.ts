@@ -1,5 +1,5 @@
 import { Adapter, JsonRpcAdapter } from './adapters/jsonRpcAdapter';
-import path from 'path';
+import * as path from 'path';
 
 import { Account } from './account';
 import { TransactionMessage } from './message';
