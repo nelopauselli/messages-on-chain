@@ -1,23 +1,25 @@
-const { ethers } = require("ethers");
-var assert = require('assert');
-const path = require("path");
+import { ok, equal } from 'assert';
+import { BigNumber } from "ethers";
+import * as path from 'path';
 
-var Adapter = require('./../adapters/jsonRpcAdapter');
-var Encoder = require('../encoders/ecEncoder');
-
-const Settings = require('./../settings');
-let settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
+import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
+import { EcEncoder } from './../src/encoders/ecEncoder';
+import { Account } from './../src/account';
+import { Configuration } from './../src/configuration';
 
 describe("Encoding messages using EC", function () {
-    let adapter, encoder;
-    let alice, bob;
-    
+    let adapter: Adapter;
+    let encoder: EcEncoder;
+    let alice: Account;
+    let bob: Account;
+    let configuration: Configuration;
+
     let publicTx = {
         nonce: 1,
-        gasPrice: ethers.BigNumber.from('0x04a817c800'),
-        gasLimit: ethers.BigNumber.from('0x52c8'),
+        gasPrice: BigNumber.from('0x04a817c800'),
+        gasLimit: BigNumber.from('0x52c8'),
         to: '0x1111111111111111111111111111111111111111',
-        value: ethers.BigNumber.from('0x00'),
+        value: BigNumber.from('0x00'),
         data: '0x486f6c612043727970746f21',
         chainId: 1337,
         v: 2710,
@@ -30,13 +32,14 @@ describe("Encoding messages using EC", function () {
     }
 
     before(function () {
-        adapter = new Adapter(settings.url);
-        encoder = new Encoder();
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(configuration);
+        encoder = new EcEncoder();
 
-        alice = adapter.createAccount('alice');
-        bob = adapter.createAccount('bob');
+        alice = adapter.loadAccount('alice');
+        bob = adapter.loadAccount('bob');
 
-        assert.equal(publicTx.from, bob.wallet.address);
+        equal(publicTx.from, bob.wallet.address);
     });
 
     it("Send encrypted message", async function () {
@@ -44,11 +47,11 @@ describe("Encoding messages using EC", function () {
         let buffer = await encoder.encode(publicKey, 'Hello Bob!');
         let tx = await alice.send(bob.wallet.address, buffer);
 
-        assert(tx);
-        assert(tx.hash);
-        assert(tx.data);
-        assert(tx.to);
-        assert(bob.wallet.address, tx.to);
+        ok(tx);
+        ok(tx.hash);
+        ok(tx.data);
+        ok(tx.to);
+        ok(bob.wallet.address, tx.to);
     });
 
     it("Send and read encrypted message", async function () {
@@ -59,13 +62,13 @@ describe("Encoding messages using EC", function () {
         let tx = await alice.send(bob.wallet.address, buffer);
         await tx.wait();
 
-        let messages = await adapter.readMessages(bob.wallet.address);
-        assert(messages);
-        assert.equal(1, messages.length);
+        let messages = await adapter.readMessages([bob.wallet.address]);
+        ok(messages);
+        equal(1, messages.length);
 
         let message = messages[0];
         let content = await encoder.decode(bob.wallet.privateKey, message.content);
-        assert.equal('Hello Bob!', content);
-        assert.equal(lastBlockNumber + 1, message.block);
+        equal('Hello Bob!', content);
+        equal(lastBlockNumber + 1, message.block);
     });
 })

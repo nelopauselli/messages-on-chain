@@ -1,10 +1,8 @@
-class PlainEncoder {
-    encode(content){
+export class PlainEncoder {
+    encode(content: string):Buffer {
         return Buffer.from(content, 'utf8');
     }
-    decode(content){
+    decode(content: Buffer):string {
         return Buffer.from(content).toString('utf8');
     }
 }
-
-module.exports = PlainEncoder;

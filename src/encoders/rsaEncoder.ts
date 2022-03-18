@@ -1,12 +1,18 @@
-const crypto = require('crypto');
-const fs = require("fs");
-const path = require("path");
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Configuration } from 'src/configuration';
 
-class RsaEncoder {
-    encode(to, content) {
-        return new Promise(function (resolve, reject) {
+export class RsaEncoder {
+    dataDir: string;
+    constructor(configuration: Configuration) {
+        this.dataDir = configuration.dataDir;
+    }
+
+    encode(to: string, content: string): Promise<Buffer> {
+        return new Promise((resolve) => {
             console.log('loading public key for ' + to);
-            let publicKey = fs.readFileSync(path.join(__dirname, '../.data', to, 'rsa.public_key.pem'), 'utf8');
+            let publicKey = fs.readFileSync(path.join(this.dataDir, to, 'rsa.public_key.pem'), 'utf8');
 
             let buffer = crypto.publicEncrypt({
                 key: publicKey,
@@ -19,9 +25,9 @@ class RsaEncoder {
             resolve(buffer);
         });
     }
-    decode(from, content) {
-        return new Promise(function (resolve, reject) {
-            let privateKey = fs.readFileSync(path.join(__dirname, '../.data', from, 'rsa.pem'), 'utf8');
+    decode(from: string, content: Buffer): Promise<string> {
+        return new Promise((resolve) => {
+            let privateKey = fs.readFileSync(path.join(this.dataDir, from, 'rsa.pem'), 'utf8');
 
             let raw = crypto.privateDecrypt(
                 {
@@ -37,5 +43,3 @@ class RsaEncoder {
         });
     }
 }
-
-module.exports = RsaEncoder;
