@@ -1,3 +1,4 @@
+import { utils } from "ethers";
 import { Adapter } from './adapters/jsonRpcAdapter';
 import { Configuration } from './configuration';
 
@@ -39,35 +40,39 @@ export class Daemon {
         }
     }
 
+    async sendPublicMessage(text: string) {
+        var content = publicMessageEncoder.encode(text);
+        await this.account.send(this.configuration.messagesOnChainPublicAddress, content);
+    }
+
+    async onSendPrivateMessage(address: string, text: string) {
+        let tx = await this.adapter.findAnyTransaction(address);
+
+        if (tx) {
+            let publickey = await privateMessageEncoder.getPublicKey(tx);
+            let content = await privateMessageEncoder.encode(publickey, text);
+            await this.account.send(address, content);
+            this.terminal.log('private message sent', 'info');
+        }
+        else {
+            this.terminal.log('Transaction from ' + address + ' not found to get publickey', 'error');
+        }
+    }
+
+    async getBalance() {
+        let balance = await this.account.getBalance();
+        this.terminal.log(`\x1b[33mYour balance is \x1b[0;32m${utils.formatEther(balance)}`, 'info');
+    }
+
     async run() {
         this.terminal.log(`connecting to ${this.configuration.url}...`, 'debug');
         let currentBlockNumber = await this.adapter.getBlockNumber();
 
-        let balance = await this.account.getBalance();
-        this.terminal.log(`Your initial balance is ${balance}`, 'info');
+        this.getBalance();
 
-        this.terminal.onSendPublicMessage = async (text) => {
-            var content = publicMessageEncoder.encode(text);
-            await this.account.send(this.configuration.messagesOnChainPublicAddress, content);
-        }
-
-        this.terminal.onSendPrivateMessage = async (address: string, text: string) => {
-            let tx = await this.adapter.findAnyTransaction(address);
-
-            if (tx) {
-                let publickey = await privateMessageEncoder.getPublicKey(tx);
-                let content = await privateMessageEncoder.encode(publickey, text);
-                await this.account.send(address, content);
-                this.terminal.log('private message sent', 'info');
-            }
-            else {
-                this.terminal.log('Transaction from ' + address + ' not found to get publickey', 'error');
-            }
-        }
-
-        this.terminal.getBalance = async () => {
-            return this.account.getBalance();
-        }
+        this.terminal.onSendPublicMessage = this.sendPublicMessage;
+        this.terminal.onSendPrivateMessage = this.onSendPrivateMessage;
+        this.terminal.getBalance = this.getBalance;
 
         this.terminal.run();
 

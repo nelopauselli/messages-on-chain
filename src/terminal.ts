@@ -1,11 +1,9 @@
-const { ethers } = require("ethers");
 const terminal = require('serverline')
-import { BigNumber } from 'ethers';
 import { Message } from './message';
 
 export interface OnSendPublicMessage { (text: string): Promise<void> }
 export interface OnSendPrivateMessage { (address: string, text: string): Promise<void> }
-export interface GetBalanceCallback { (): Promise<BigNumber> }
+export interface GetBalanceCallback { (): Promise<void> }
 
 export class Terminal {
     messages: Message[];
@@ -61,7 +59,6 @@ export class Terminal {
                 case 'balance':
                     if (this.getBalance)
                         this.getBalance()
-                            .then(balance => console.log(`\x1b[33mYour balance is \x1b[32m${ethers.utils.formatEther(balance)}`));
                     else
                         this.log('Balance is not implemented', 'error');
                     return true;
