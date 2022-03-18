@@ -12,9 +12,9 @@ const configuration = Configuration.from(path.join(__dirname, './../settings.jso
 const adapter: Adapter = new JsonRpcAdapter(configuration);
 const terminal: Terminal = new Terminal();
 
-function loadWallet(): Account {
+function loadOrCreateAccount(): Account {
     if (!adapter.existsAccount('me')) {
-        let account = adapter.newAccount('me');
+        let account = adapter.createAccount('me');
         let wallet = account.wallet;
         terminal.log(`\t Address: ${wallet.address}`, 'info');
         terminal.log(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
@@ -28,7 +28,7 @@ function loadWallet(): Account {
 }
 
 async function start() {
-    const account = loadWallet();
+    const account = loadOrCreateAccount();
     const sender = new Sender(adapter, account, configuration, terminal);
     const receiver = new Receiver(adapter, account, configuration, terminal);
 

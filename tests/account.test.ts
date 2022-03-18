@@ -52,7 +52,7 @@ describe("Accounts", function () {
     });
 
     it("New acount", async function () {
-        let account = adapter.newAccount('peter');
+        let account = adapter.createAccount('peter');
         ok(account);
         ok(account.wallet);
         ok(account.wallet.address);

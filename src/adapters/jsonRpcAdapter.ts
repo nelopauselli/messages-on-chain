@@ -13,7 +13,7 @@ export interface Adapter {
     onBlock(callback: OnBlockCallback<number>): void;
     existsAccount(name: string): boolean;
     loadAccount(name: string): Account;
-    newAccount(name: string): Account;
+    createAccount(name: string): Account;
     getBlockNumber(): Promise<number>;
     readMessages(addresses: string[]): Promise<TransactionMessage[]>;
     readMessagesFromBlock(addresses: string[], blockNumber: number): Promise<TransactionMessage[]>;
@@ -43,7 +43,7 @@ export class JsonRpcAdapter implements Adapter {
         return Account.fromFile(privateKeyPath, name, this.provider);
     }
 
-    newAccount(name: string): Account {
+    createAccount(name: string): Account {
         let wallet = ethers.Wallet.createRandom();
         let walletConnected = wallet.connect(this.provider);
 
