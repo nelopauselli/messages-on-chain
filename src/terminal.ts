@@ -22,9 +22,6 @@ export class Terminal implements Logger {
     }
 
     log(text: string, level: string, metadata?: string) {
-        if (this.messages.length > process.stdout.rows - 2)
-            this.messages.shift();
-
         let prefix, posfix;
         if (level === 'debug') {
             prefix = '\x1b[2;37m';
@@ -62,7 +59,7 @@ export class Terminal implements Logger {
                     break
                 case 'balance':
                     if (this.getBalance)
-                        this.getBalance()
+                        this.getBalance();
                     else
                         this.log('Balance is not implemented', 'error');
                     return true;
@@ -97,7 +94,7 @@ export class Terminal implements Logger {
             if (terminal.isMuted())
                 terminal.setMuted(false)
 
-            return false;
+            return true;
         });
 
         terminal.on('SIGINT', function (rl: any) {

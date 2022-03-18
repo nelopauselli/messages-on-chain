@@ -25,6 +25,7 @@ export class Sender {
     async sendPublicMessage(text: string) {
         var content = publicMessageEncoder.encode(text);
         await this.account.send(this.configuration.messagesOnChainPublicAddress, content);
+        this.logger.log('Message sent', 'info');
     }
 
     async sendPrivateMessage(address: string, text: string): Promise<void> {
