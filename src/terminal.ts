@@ -5,7 +5,11 @@ export interface OnSendPublicMessage { (text: string): Promise<void> }
 export interface OnSendPrivateMessage { (address: string, text: string): Promise<void> }
 export interface GetBalanceCallback { (): Promise<void> }
 
-export class Terminal {
+export interface Logger {
+    log(text: string, level: string, metadata?: string): void;
+}
+
+export class Terminal implements Logger {
     messages: Message[];
     command: string;
     onSendPublicMessage: OnSendPublicMessage | undefined = undefined;

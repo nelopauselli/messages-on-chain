@@ -4,7 +4,7 @@ import { Adapter } from "./adapters/jsonRpcAdapter";
 import { PlainEncoder } from './encoders/plainEncoder';
 import { EcEncoder } from './encoders/ecEncoder';
 import { Configuration } from "./configuration";
-import { Terminal } from "./terminal";
+import { Logger } from "./terminal";
 
 const publicMessageEncoder = new PlainEncoder();
 const privateMessageEncoder = new EcEncoder();
@@ -13,13 +13,13 @@ export class Sender {
     adapter: Adapter;
     account: Account;
     configuration: Configuration;
-    terminal: Terminal;
+    logger: Logger;
 
-    constructor(adapter: Adapter, account: Account, configuration: Configuration, terminal: Terminal) {
+    constructor(adapter: Adapter, account: Account, configuration: Configuration, logger: Logger) {
         this.adapter = adapter;
         this.account = account;
         this.configuration = configuration;
-        this.terminal = terminal;
+        this.logger = logger;
     }
 
     async sendPublicMessage(text: string) {
@@ -31,14 +31,14 @@ export class Sender {
         let tx = await this.adapter.findAnyTransaction(address);
 
         if (!tx) {
-            this.terminal.log('Transaction from ' + address + ' not found to get publickey', 'error');
+            this.logger.log('Transaction from ' + address + ' not found to get publickey', 'error');
             return;
         }
 
         let publickey = await privateMessageEncoder.getPublicKey(tx);
         let content = await privateMessageEncoder.encode(publickey, text);
         await this.account.send(address, content);
-        this.terminal.log('Message sent', 'info');
+        this.logger.log('Message sent', 'info');
     }
 }
 
