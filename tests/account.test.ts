@@ -3,15 +3,15 @@ import { BigNumber } from 'ethers';
 import path from 'path';
 
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
-import { Settings } from './../src/settings';
+import { Configuration } from './../src/configuration';
 
 describe("Accounts", function () {
     let adapter: Adapter;
-    let settings: Settings;
+    let configuration: Configuration;
 
     before(function () {
-        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
-        adapter = new JsonRpcAdapter(settings.url);
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(configuration);
     });
 
     it("Alice", function () {

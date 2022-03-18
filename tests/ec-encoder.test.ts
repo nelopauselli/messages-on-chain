@@ -5,13 +5,13 @@ import path from 'path';
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
 import { EcEncoder } from './../src/encoders/ecEncoder';
 import { Account } from './../src/account';
-import { Settings } from './../src/settings';
+import { Configuration } from './../src/configuration';
 
 describe("EC encoder", function () {
     let adapter: Adapter;
     let encoder: EcEncoder;
     let alice: Account;
-    let settings: Settings;
+    let configuration: Configuration;
 
     let tx = {
         nonce: 149,
@@ -31,8 +31,8 @@ describe("EC encoder", function () {
     };
 
     before(function () {
-        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
-        adapter = new JsonRpcAdapter(settings.url);
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(configuration);
         alice = adapter.createAccount('alice');
 
         encoder = new EcEncoder();

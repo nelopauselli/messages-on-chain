@@ -5,8 +5,8 @@ export class Account {
     name: string;
     wallet: ethers.Wallet;
 
-    static fromFile(name: string, provider: ethers.providers.Provider): Account {
-        let wallet = new ethers.Wallet(fs.readFileSync(`./.data/${name}/private.key`).toString('utf8'), provider);
+    static fromFile(path:string, name: string, provider: ethers.providers.Provider): Account {
+        let wallet = new ethers.Wallet(fs.readFileSync(path).toString('utf8'), provider);
         return new Account(name, wallet);
     }
 

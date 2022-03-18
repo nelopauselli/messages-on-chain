@@ -4,18 +4,18 @@ import path from 'path';
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
 import { PlainEncoder } from './../src/encoders/plainEncoder';
 import { Account } from './../src/account';
-import { Settings } from './../src/settings';
+import { Configuration } from './../src/configuration';
 
 describe("Plain (public) messages", function () {
     let adapter: Adapter;
     let encoder: PlainEncoder;
     let alice: Account;
     let bob: Account;
-    let settings: Settings;
+    let configuration: Configuration;
 
     before(function () {
-        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
-        adapter = new JsonRpcAdapter(settings.url);
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(configuration);
         encoder = new PlainEncoder();
 
         alice = adapter.createAccount('alice');
@@ -24,7 +24,7 @@ describe("Plain (public) messages", function () {
 
     it("Send plain message", async function () {
         let buffer = encoder.encode('Hello crypto world!');
-        let tx = await alice.send(settings.messagesOnChainPublicAddress, buffer);
+        let tx = await alice.send(configuration.messagesOnChainPublicAddress, buffer);
 
         ok(tx);
         ok(tx.hash);
@@ -36,10 +36,10 @@ describe("Plain (public) messages", function () {
         let lastBlockNumber = await adapter.getBlockNumber();
 
         let buffer = encoder.encode('Hello crypto world!');
-        let tx = await alice.send(settings.messagesOnChainPublicAddress, buffer);
+        let tx = await alice.send(configuration.messagesOnChainPublicAddress, buffer);
         await tx.wait();
 
-        let messages = await adapter.readMessages([settings.messagesOnChainPublicAddress]);
+        let messages = await adapter.readMessages([configuration.messagesOnChainPublicAddress]);
         ok(messages);
         equal(1, messages.length);
 
@@ -58,9 +58,9 @@ describe("Plain (public) messages", function () {
         let lastBlockNumber = await adapter.getBlockNumber();
 
         let buffer = encoder.encode('Hello crypto world!');
-        let tx1 = await alice.send(settings.messagesOnChainPublicAddress, buffer);
+        let tx1 = await alice.send(configuration.messagesOnChainPublicAddress, buffer);
         await tx1.wait();
-        let tx2 = await bob.send(settings.messagesOnChainPublicAddress, buffer);
+        let tx2 = await bob.send(configuration.messagesOnChainPublicAddress, buffer);
         await tx2.wait();
 
         let tx3 = await adapter.findAnyTransaction(alice.wallet.address);

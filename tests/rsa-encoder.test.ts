@@ -1,11 +1,15 @@
+import path from 'path';
 import { ok, equal, rejects, notEqual } from 'assert';
 import { RsaEncoder } from './../src/encoders/rsaEncoder';
+import { Configuration } from './../src/configuration';
 
 describe("Rsa encoder", function () {
     let encoder: RsaEncoder;
+    let configuration: Configuration;
 
     before(function () {
-        encoder = new RsaEncoder();
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        encoder = new RsaEncoder(configuration);
     });
 
     it("Encode", async function () {

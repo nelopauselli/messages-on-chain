@@ -11,19 +11,19 @@ const terminal: Terminal = new Terminal();
 
 import { PlainEncoder } from './encoders/plainEncoder';
 import { EcEncoder } from './encoders/ecEncoder';
-import { Settings } from './settings.js';
+import { Configuration } from './configuration.js';
 
 const network = process.argv.length > 2 ? process.argv[2] : "default";
-const settings = Settings.from(path.join(__dirname, './../settings.json'), network);
+const configuration = Configuration.from(path.join(__dirname, './../settings.json'), network);
 
 const publicMessageEncoder = new PlainEncoder();
 const privateMessageEncoder = new EcEncoder();
 
-const adapter: Adapter = new JsonRpcAdapter(settings.url);
+const adapter: Adapter = new JsonRpcAdapter(configuration);
 let account: Account;
 
 async function loadMessagesFromBlock(blockNumber: number) {
-    let messages = await adapter.readMessagesFromBlock([settings.messagesOnChainPublicAddress, account.wallet.address], blockNumber);
+    let messages = await adapter.readMessagesFromBlock([configuration.messagesOnChainPublicAddress, account.wallet.address], blockNumber);
     if (messages && messages.length) {
         messages.forEach(async (m: TransactionMessage) => {
             if (m.to === account.wallet.address) {
@@ -38,10 +38,10 @@ async function loadMessagesFromBlock(blockNumber: number) {
 }
 
 async function main() {
-    terminal.log(`connecting to ${settings.url}...`, 'debug');
+    terminal.log(`connecting to ${configuration.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
 
-    let dataPath = path.join(__dirname, '.data');
+    let dataPath = configuration.dataDir;
     if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
 
     let accountPath = path.join(dataPath, 'me');
@@ -57,7 +57,8 @@ async function main() {
         terminal.log(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
     }
     else {
-        account = await adapter.createAccount('me');
+        terminal.log(`Loading account from ${privateKeyPath}`, 'debug');
+         account = await adapter.createAccount('me');
         terminal.log(`Your public address is ${account.wallet.address}`, 'info');
     }
 
@@ -66,7 +67,7 @@ async function main() {
 
     terminal.onSendPublicMessage = async (text) => {
         var content = publicMessageEncoder.encode(text);
-        account.send(settings.messagesOnChainPublicAddress, content);
+        account.send(configuration.messagesOnChainPublicAddress, content);
     }
 
     terminal.onSendPrivateMessage = async (address, text) => {

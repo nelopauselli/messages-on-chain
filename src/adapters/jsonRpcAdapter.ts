@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { TransactionMessage } from "./../message";
 import { Account } from './../account';
+import path from 'path';
+import { Configuration } from "./../configuration";
 
 interface OnBlockCallback<T1, T2 = Promise<void>> {
     (param1: T1): T2;
@@ -18,9 +20,11 @@ export interface Adapter {
 
 export class JsonRpcAdapter implements Adapter {
     provider: ethers.providers.Provider;
+    dataDir: string;
 
-    constructor(url: string) {
-        this.provider = new ethers.providers.JsonRpcProvider(url);
+    constructor(configuration: Configuration) {
+        this.dataDir = configuration.dataDir;
+        this.provider = new ethers.providers.JsonRpcProvider(configuration.url);
     }
 
     onBlock(callback: OnBlockCallback<number>) {
@@ -28,7 +32,8 @@ export class JsonRpcAdapter implements Adapter {
     }
 
     createAccount(name: string): Account {
-        return Account.fromFile(name, this.provider);
+        let privateKeyPath = path.join(this.dataDir, name, 'private.key');
+        return Account.fromFile(privateKeyPath, name, this.provider);
     }
 
     newAccount(name: string): Account {

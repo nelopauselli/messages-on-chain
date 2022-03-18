@@ -4,19 +4,19 @@ import path from 'path';
 import { JsonRpcAdapter, Adapter } from './../src/adapters/jsonRpcAdapter';
 import { RsaEncoder } from './../src/encoders/rsaEncoder';
 import { Account } from './../src/account';
-import { Settings } from './../src/settings';
+import { Configuration } from './../src/configuration';
 
 describe("Encoding messages using RSA", function () {
     let adapter: Adapter;
     let encoder: RsaEncoder;
     let alice: Account;
     let bob: Account;
-    let settings: Settings;
+    let configuration: Configuration;
 
     before(function () {
-        settings = Settings.from(path.join(__dirname, './settings.json'), 'default');
-        adapter = new JsonRpcAdapter(settings.url);
-        encoder = new RsaEncoder();
+        configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
+        adapter = new JsonRpcAdapter(configuration);
+        encoder = new RsaEncoder(configuration);
 
         alice = adapter.createAccount('alice');
         bob = adapter.createAccount('bob');
