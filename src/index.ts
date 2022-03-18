@@ -4,6 +4,8 @@ import { Configuration } from './configuration.js';
 import { Terminal } from './terminal';
 import { Daemon } from './daemon';
 import { Account } from './account';
+import { Sender } from './sender';
+import { Receiver } from './receiver';
 
 const network = process.argv.length > 2 ? process.argv[2] : "default";
 const configuration = Configuration.from(path.join(__dirname, './../settings.json'), network);
@@ -23,7 +25,10 @@ async function start() {
         terminal.log(`Your public address is ${account.wallet.address}`, 'info');
     }
 
-    let daemon = new Daemon(adapter, configuration, account, terminal);
+    let sender = new Sender(adapter, account, configuration, terminal);
+    let receiver = new Receiver(adapter, account, configuration, terminal);
+
+    let daemon = new Daemon(adapter, configuration, account, terminal, sender, receiver);
     await daemon.run();
 }
 
