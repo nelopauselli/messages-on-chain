@@ -62,7 +62,7 @@ describe("Encoding messages using EC", function () {
         let tx = await alice.send(bob.wallet.address, buffer);
         await tx.wait();
 
-        let messages = await adapter.readMessages(bob.wallet.address);
+        let messages = await adapter.readMessages([bob.wallet.address]);
         ok(messages);
         equal(1, messages.length);
 

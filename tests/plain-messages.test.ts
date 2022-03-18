@@ -39,7 +39,7 @@ describe("Plain (public) messages", function () {
         let tx = await alice.send(settings.messagesOnChainPublicAddress, buffer);
         await tx.wait();
 
-        let messages = await adapter.readMessages(settings.messagesOnChainPublicAddress);
+        let messages = await adapter.readMessages([settings.messagesOnChainPublicAddress]);
         ok(messages);
         equal(1, messages.length);
 
