@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "ts-mocha tests/*.ts",
-    "start": "tsc & node dist/index",
+    "prebuild":"tsc --build --clean && rm -r dist",
+    "build": "tsc",
+    "start": "npm run build && node dist/index",
     "mumbai": "node index mumbai"
   },
   "repository": {
