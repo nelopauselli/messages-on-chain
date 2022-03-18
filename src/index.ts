@@ -1,5 +1,4 @@
 import { Adapter, JsonRpcAdapter } from './adapters/jsonRpcAdapter';
-import fs from 'fs';
 import path from 'path';
 
 import { Account } from './account';
@@ -41,23 +40,13 @@ async function main() {
     terminal.log(`connecting to ${configuration.url}...`, 'debug');
     let currentBlockNumber = await adapter.getBlockNumber();
 
-    let dataPath = configuration.dataDir;
-    if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
-
-    let accountPath = path.join(dataPath, 'me');
-    if (!fs.existsSync(accountPath)) fs.mkdirSync(accountPath);
-
-    let privateKeyPath = path.join(accountPath, 'private.key');
-
-    if (!fs.existsSync(privateKeyPath)) {
+    if (!adapter.existsAccount('me')) {
         account = await adapter.newAccount('me');
         let wallet = account.wallet;
-        fs.writeFileSync(privateKeyPath, wallet.privateKey);
         terminal.log(`\t Address: ${wallet.address}`, 'info');
         terminal.log(`\t Phrase: ${wallet.mnemonic.phrase}`, 'info');
     }
     else {
-        terminal.log(`Loading account from ${privateKeyPath}`, 'debug');
          account = await adapter.createAccount('me');
         terminal.log(`Your public address is ${account.wallet.address}`, 'info');
     }

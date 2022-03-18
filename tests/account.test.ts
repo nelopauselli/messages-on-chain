@@ -14,6 +14,11 @@ describe("Accounts", function () {
         adapter = new JsonRpcAdapter(configuration);
     });
 
+    it("Alice exists", function () {
+        let exists = adapter.existsAccount('alice');
+        ok(exists);
+    });
+
     it("Alice", function () {
         let alice = adapter.createAccount('alice');
 
@@ -23,6 +28,11 @@ describe("Accounts", function () {
         equal("0xCF50b5e4B3AFe99FBfB2d93DCb4BdFE670477505", alice.wallet.address);
     });
 
+    it("Bob exists", function () {
+        let exists = adapter.existsAccount('bob');
+        ok(exists);
+    });
+
     it("Bob", function () {
         let bob = adapter.createAccount('bob');
 
@@ -30,6 +40,11 @@ describe("Accounts", function () {
         equal('bob', bob.name);
         ok(bob.wallet);
         equal("0x5c19C5406426783BA02b1cf322F4332b79a8B564", bob.wallet.address);
+    });
+
+    it("Batman don't exists", function () {
+        let exists = adapter.existsAccount('batman');
+        ok(!exists);
     });
 
     it("Batman", function () {
