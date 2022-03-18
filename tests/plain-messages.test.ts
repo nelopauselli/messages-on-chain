@@ -18,8 +18,8 @@ describe("Plain (public) messages", function () {
         adapter = new JsonRpcAdapter(configuration);
         encoder = new PlainEncoder();
 
-        alice = adapter.createAccount('alice');
-        bob = adapter.createAccount('bob');
+        alice = adapter.loadAccount('alice');
+        bob = adapter.loadAccount('bob');
     });
 
     it("Send plain message", async function () {

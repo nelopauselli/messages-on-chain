@@ -33,7 +33,7 @@ describe("EC encoder", function () {
     before(function () {
         configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
         adapter = new JsonRpcAdapter(configuration);
-        alice = adapter.createAccount('alice');
+        alice = adapter.loadAccount('alice');
 
         encoder = new EcEncoder();
         equal(tx.from, alice.wallet.address);

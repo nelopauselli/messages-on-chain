@@ -36,8 +36,8 @@ describe("Encoding messages using EC", function () {
         adapter = new JsonRpcAdapter(configuration);
         encoder = new EcEncoder();
 
-        alice = adapter.createAccount('alice');
-        bob = adapter.createAccount('bob');
+        alice = adapter.loadAccount('alice');
+        bob = adapter.loadAccount('bob');
 
         equal(publicTx.from, bob.wallet.address);
     });

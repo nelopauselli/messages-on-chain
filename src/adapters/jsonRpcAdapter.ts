@@ -11,8 +11,8 @@ interface OnBlockCallback<T1, T2 = Promise<void>> {
 
 export interface Adapter {
     onBlock(callback: OnBlockCallback<number>): void;
-    existsAccount(name:string):boolean;
-    createAccount(name: string): Account;
+    existsAccount(name: string): boolean;
+    loadAccount(name: string): Account;
     newAccount(name: string): Account;
     getBlockNumber(): Promise<number>;
     readMessages(addresses: string[]): Promise<TransactionMessage[]>;
@@ -33,12 +33,12 @@ export class JsonRpcAdapter implements Adapter {
         this.provider.on('block', (blockNumber) => { callback(blockNumber) });
     }
 
-    existsAccount(name:string):boolean{
+    existsAccount(name: string): boolean {
         let privateKeyPath = path.join(this.dataDir, name, 'private.key');
         return fs.existsSync(privateKeyPath);
     }
 
-    createAccount(name: string): Account {
+    loadAccount(name: string): Account {
         let privateKeyPath = path.join(this.dataDir, name, 'private.key');
         return Account.fromFile(privateKeyPath, name, this.provider);
     }
@@ -46,13 +46,13 @@ export class JsonRpcAdapter implements Adapter {
     newAccount(name: string): Account {
         let wallet = ethers.Wallet.createRandom();
         let walletConnected = wallet.connect(this.provider);
-        
+
         let dataPath = this.dataDir;
         if (!fs.existsSync(dataPath)) fs.mkdirSync(dataPath);
-    
+
         let accountPath = path.join(dataPath, name);
         if (!fs.existsSync(accountPath)) fs.mkdirSync(accountPath);
-        
+
         let privateKeyPath = path.join(accountPath, 'private.key');
         fs.writeFileSync(privateKeyPath, wallet.privateKey);
         return new Account(name, walletConnected);

@@ -18,8 +18,8 @@ describe("Encoding messages using RSA", function () {
         adapter = new JsonRpcAdapter(configuration);
         encoder = new RsaEncoder(configuration);
 
-        alice = adapter.createAccount('alice');
-        bob = adapter.createAccount('bob');
+        alice = adapter.loadAccount('alice');
+        bob = adapter.loadAccount('bob');
     });
 
     it("Send encrypted message", async function () {

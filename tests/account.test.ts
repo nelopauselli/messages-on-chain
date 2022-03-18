@@ -20,7 +20,7 @@ describe("Accounts", function () {
     });
 
     it("Alice", function () {
-        let alice = adapter.createAccount('alice');
+        let alice = adapter.loadAccount('alice');
 
         ok(alice);
         equal('alice', alice.name);
@@ -34,7 +34,7 @@ describe("Accounts", function () {
     });
 
     it("Bob", function () {
-        let bob = adapter.createAccount('bob');
+        let bob = adapter.loadAccount('bob');
 
         ok(bob);
         equal('bob', bob.name);
@@ -48,7 +48,7 @@ describe("Accounts", function () {
     });
 
     it("Batman", function () {
-        rejects(async () => adapter.createAccount('batman'));
+        rejects(async () => adapter.loadAccount('batman'));
     });
 
     it("New acount", async function () {
@@ -63,7 +63,7 @@ describe("Accounts", function () {
     });
 
     it("Balance of Alice", async function () {
-        let alice = adapter.createAccount('alice');
+        let alice = adapter.loadAccount('alice');
         let balance = await alice.getBalance();
         ok(balance);
         ok(balance > BigNumber.from(0), 'Balance greater than 0');
