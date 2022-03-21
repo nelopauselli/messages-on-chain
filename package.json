@@ -8,7 +8,7 @@
     "prebuild":"tsc --build --clean && rm -rf dist",
     "build": "tsc",
     "start": "npm run build && node dist/index",
-    "mumbai": "node dist/index mumbai"
+    "mumbai": "npm run build && node dist/index mumbai"
   },
   "repository": {
     "type": "git",
