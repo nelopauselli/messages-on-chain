@@ -56,11 +56,9 @@ export class Daemon {
         // }
 
         this.adapter.onBlock(async (blockNumber: number) => {
-            this.terminal.log(`Incoming block ${blockNumber}`, 'debug');
             for (let block = this.currentBlockNumber + 1; block <= blockNumber; block++) {
                 this.terminal.log(`Searching message in block ${block}`, 'debug');
                 this.currentBlockNumber = block;
-                this.terminal.log(`new currentBlockNumber: ${this.currentBlockNumber}`, 'debug');
                 this.receiver.loadMessagesFromBlock(block);
             }
         });
