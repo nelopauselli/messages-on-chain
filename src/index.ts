@@ -9,8 +9,8 @@ import { Receiver } from './receiver';
 
 const network = process.argv.length > 2 ? process.argv[2] : "default";
 const configuration = Configuration.from(path.join(__dirname, './../settings.json'), network);
-const adapter: Adapter = new JsonRpcAdapter(configuration);
 const terminal: Terminal = new Terminal();
+const adapter: Adapter = new JsonRpcAdapter(configuration, terminal);
 
 function loadOrCreateAccount(): Account {
     if (!adapter.existsAccount('me')) {

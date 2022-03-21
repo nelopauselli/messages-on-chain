@@ -37,12 +37,18 @@ export class Terminal implements Logger {
         } else if (level === 'private') {
             prefix = '\x1b[0;32m';
             posfix = '\x1b[0;37m';
+        } else if (level === 'error') {
+            prefix = '\x1b[0;31m';
+            posfix = '\x1b[0;37m';
         } else {
             prefix = '';
             posfix = '';
         }
 
         prefix += ` [${level}] `;
+        if (metadata)
+            metadata = `\x1b[2;37m\t ${metadata}\x1b[0;37m`;
+
         this.messages.push(new Message(`${prefix}${text}${posfix}`, level, metadata));
     }
 
@@ -117,8 +123,12 @@ export class Terminal implements Logger {
         setInterval(() => {
             if (this.messages.length > 0) {
                 let message: Message | undefined = this.messages.shift();
-                if (message)
+                if (message) {
                     console.log(message.text);
+                    if (message.metadata) {
+                        console.log(message.metadata);
+                    }
+                }
             }
         }, 100)
     }

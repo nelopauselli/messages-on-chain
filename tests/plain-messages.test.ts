@@ -15,7 +15,7 @@ describe("Plain (public) messages", function () {
 
     before(function () {
         configuration = Configuration.from(path.join(__dirname, './settings.json'), 'default');
-        adapter = new JsonRpcAdapter(configuration);
+        adapter = new JsonRpcAdapter(configuration, console);
         encoder = new PlainEncoder();
 
         alice = adapter.loadAccount('alice');

@@ -4,6 +4,7 @@ import { Account } from './../account';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Configuration } from "./../configuration";
+import { Logger } from "src/terminal";
 
 interface OnBlockCallback<T1, T2 = Promise<void>> {
     (param1: T1): T2;
@@ -23,10 +24,16 @@ export interface Adapter {
 export class JsonRpcAdapter implements Adapter {
     provider: ethers.providers.Provider;
     dataDir: string;
+    logger: Logger;
 
-    constructor(configuration: Configuration) {
+    constructor(configuration: Configuration, logger: Logger) {
         this.dataDir = configuration.dataDir;
         this.provider = new ethers.providers.JsonRpcProvider(configuration.url);
+        this.logger = logger;
+        this.provider.on('error', (reason, error) => {
+            this.logger.log(reason, 'error');
+            this.logger.log(error, 'error');
+        });
     }
 
     onBlock(callback: OnBlockCallback<number>) {
@@ -72,6 +79,7 @@ export class JsonRpcAdapter implements Adapter {
         addresses = addresses.map(a => a.toLowerCase());
 
         let block = await this.provider.getBlock(blockNumber);
+        this.logger.log(`Searching message in ${block.transactions.length} transactions (block: ${block.number})`, 'debug');
         for (let t = 0; t < block.transactions.length; t++) {
             let transactionHash = block.transactions[t];
             let transaction = await this.provider.getTransaction(transactionHash);

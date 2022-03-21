@@ -55,11 +55,12 @@ export class Daemon {
         //     await this.receiver.loadMessagesFromBlock(blockNumber);
         // }
 
+        //TODO: Create a contract to listen for events?
         this.adapter.onBlock(async (blockNumber: number) => {
             for (let block = this.currentBlockNumber + 1; block <= blockNumber; block++) {
                 this.terminal.log(`Searching message in block ${block}`, 'debug');
                 this.currentBlockNumber = block;
-                this.receiver.loadMessagesFromBlock(block);
+                await this.receiver.loadMessagesFromBlock(block);
             }
         });
     }
