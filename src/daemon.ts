@@ -43,11 +43,12 @@ export class Daemon {
         this.terminal.run();
 
         for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
-            this.terminal.log(`Searching message in block ${blockNumber}`, 'info');
+            this.terminal.log(`Searching message in block ${blockNumber}`, 'debug');
             await this.receiver.loadMessagesFromBlock(blockNumber);
         }
 
         this.adapter.onBlock(async (blockNumber: number) => {
+            this.terminal.log(`Searching message in block ${blockNumber}`, 'debug');
             await this.receiver.loadMessagesFromBlock(blockNumber);
         });
     }
