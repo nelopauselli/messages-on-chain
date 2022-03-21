@@ -30,6 +30,11 @@ export class Daemon {
         this.terminal.log(`\x1b[33mYour balance is \x1b[0;32m${utils.formatEther(balance)}`, 'info');
     }
 
+    async getBlockNumber() {
+        let block = await this.adapter.getBlockNumber();
+        this.terminal.log(`\x1b[33mCurrent block is \x1b[0;32m${block}`, 'info');
+    }
+
     async run() {
         this.terminal.log(`connecting to ${this.configuration.url}...`, 'debug');
         let currentBlockNumber = await this.adapter.getBlockNumber();
@@ -39,6 +44,7 @@ export class Daemon {
         this.terminal.onSendPublicMessage = async (text) => this.sender.sendPublicMessage(text);
         this.terminal.onSendPrivateMessage = async (address: string, text: string) => this.sender.sendPrivateMessage(address, text);
         this.terminal.getBalance = () => this.getBalance();
+        this.terminal.getBlockNumber = () => this.getBlockNumber();
 
         this.terminal.run();
 

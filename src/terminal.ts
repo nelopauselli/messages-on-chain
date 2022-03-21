@@ -4,6 +4,7 @@ import { Message } from './message';
 export interface OnSendPublicMessage { (text: string): Promise<void> }
 export interface OnSendPrivateMessage { (address: string, text: string): Promise<void> }
 export interface GetBalanceCallback { (): Promise<void> }
+export interface GetBlockNumberCallback { (): Promise<void> }
 
 export interface Logger {
     log(text: string, level: string, metadata?: string): void;
@@ -15,6 +16,7 @@ export class Terminal implements Logger {
     onSendPublicMessage: OnSendPublicMessage | undefined = undefined;
     onSendPrivateMessage: OnSendPrivateMessage | undefined = undefined;
     getBalance: GetBalanceCallback | undefined = undefined;
+    getBlockNumber: GetBlockNumberCallback | undefined = undefined;
 
     constructor() {
         this.messages = [];
@@ -48,7 +50,7 @@ export class Terminal implements Logger {
         process.stdout.write('\x1Bc')
 
         terminal.init()
-        terminal.setCompletion(['help', 'balance', 'clear', 'exit'])
+        terminal.setCompletion(['help', 'balance', 'blocknumber', 'clear', 'exit'])
 
         terminal.setPrompt('\x1b[37m> ')
 
@@ -62,6 +64,12 @@ export class Terminal implements Logger {
                         this.getBalance();
                     else
                         this.log('Balance is not implemented', 'error');
+                    return true;
+                case 'blocknumber':
+                    if (this.getBlockNumber)
+                        this.getBlockNumber();
+                    else
+                        this.log('BlockNumber is not implemented', 'error');
                     return true;
                 case 'clear':
                     process.stdout.write('\x1Bc');

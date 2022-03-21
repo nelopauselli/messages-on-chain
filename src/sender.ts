@@ -24,8 +24,8 @@ export class Sender {
 
     async sendPublicMessage(text: string) {
         var content = publicMessageEncoder.encode(text);
-        await this.account.send(this.configuration.messagesOnChainPublicAddress, content);
-        this.logger.log('Message sent', 'info');
+        let messageTx = await this.account.send(this.configuration.messagesOnChainPublicAddress, content);
+        this.logger.log(`Message sent with tx hash ${messageTx.hash}`, 'info');
     }
 
     async sendPrivateMessage(address: string, text: string): Promise<void> {
@@ -38,8 +38,9 @@ export class Sender {
 
         let publickey = await privateMessageEncoder.getPublicKey(tx);
         let content = await privateMessageEncoder.encode(publickey, text);
-        await this.account.send(address, content);
-        this.logger.log('Message sent', 'info');
+        let messageTx = await this.account.send(address, content);
+        this.logger.log(`Message sent with tx hash ${messageTx.hash}`, 'info');
+
     }
 }
 
