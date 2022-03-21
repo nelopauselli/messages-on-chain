@@ -15,6 +15,7 @@ export class Daemon {
     terminal: Terminal;
     sender: Sender;
     receiver: Receiver;
+    currentBlockNumber: number;
 
     constructor(adapter: Adapter, configuration: Configuration, account: Account, terminal: Terminal, sender: Sender, receiver: Receiver) {
         this.adapter = adapter;
@@ -23,6 +24,7 @@ export class Daemon {
         this.terminal = terminal;
         this.sender = sender;
         this.receiver = receiver;
+        this.currentBlockNumber = NaN;
     }
 
     async getBalance() {
@@ -36,11 +38,6 @@ export class Daemon {
     }
 
     async run() {
-        this.terminal.log(`connecting to ${this.configuration.url}...`, 'debug');
-        let currentBlockNumber = await this.adapter.getBlockNumber();
-
-        this.getBalance();
-
         this.terminal.onSendPublicMessage = async (text) => this.sender.sendPublicMessage(text);
         this.terminal.onSendPrivateMessage = async (address: string, text: string) => this.sender.sendPrivateMessage(address, text);
         this.terminal.getBalance = () => this.getBalance();
@@ -48,14 +45,24 @@ export class Daemon {
 
         this.terminal.run();
 
-        for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
-            this.terminal.log(`Searching message in block ${blockNumber}`, 'debug');
-            await this.receiver.loadMessagesFromBlock(blockNumber);
-        }
+        this.terminal.log(`connecting to ${this.configuration.url}...`, 'debug');
+        this.currentBlockNumber = await this.adapter.getBlockNumber() - 1;
+
+        this.getBalance();
+
+        // for (let blockNumber = currentBlockNumber - 2; blockNumber < currentBlockNumber; blockNumber++) {
+        //     this.terminal.log(`Searching message in block ${blockNumber}`, 'debug');
+        //     await this.receiver.loadMessagesFromBlock(blockNumber);
+        // }
 
         this.adapter.onBlock(async (blockNumber: number) => {
-            this.terminal.log(`Searching message in block ${blockNumber}`, 'debug');
-            await this.receiver.loadMessagesFromBlock(blockNumber);
+            this.terminal.log(`Incoming block ${blockNumber}`, 'debug');
+            for (let block = this.currentBlockNumber + 1; block <= blockNumber; block++) {
+                this.terminal.log(`Searching message in block ${block}`, 'debug');
+                this.currentBlockNumber = block;
+                this.terminal.log(`new currentBlockNumber: ${this.currentBlockNumber}`, 'debug');
+                this.receiver.loadMessagesFromBlock(block);
+            }
         });
     }
 }
